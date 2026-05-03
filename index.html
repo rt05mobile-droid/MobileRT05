@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOBILE RT 05 - Oleana Park</title>
-    <link rel="icon" type="image/png" href="logo.png?v=6">
+    
+    <link rel="icon" type="image/png" href="logo.png?v=7">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 175px; padding-bottom: 50px; }
         .fixed-top-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1050; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -15,18 +17,23 @@
         .hero-section h1 { font-size: 1.1rem; margin-bottom: 0; }
         .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
         .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
+        
         .card-menu { border: none; border-radius: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); cursor: pointer; transition: 0.2s; background: white; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .card-menu:active { transform: scale(0.92); }
+        .card-menu:active { transform: scale(0.92); background-color: #f8f9fa; }
         .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; }
         .card-menu small { font-size: 0.75rem; font-weight: 700; color: #0a58ca; }
+        
         .content-section { display: none; margin-top: 15px; animation: fadeIn 0.4s ease-in-out; }
         .active-section { display: block; }
+        
         .table-responsive { background: white; border-radius: 15px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .status-ok { background-color: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
         .status-wait { background-color: #f8d7da; color: #842029; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
+        
+        .kas-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; }
         .text-pemasukan { color: #198754; font-weight: 700; }
         .text-pengeluaran { color: #dc3545; font-weight: 700; }
-        .kas-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -41,11 +48,12 @@
             </div>
         </header>
         <div class="running-text-container">
-            <marquee direction="left">📢 INFO: Cek Iuran, Laporan Kas, dan Agenda RT 05 Oleana Park.</marquee>
+            <marquee direction="left" scrollamount="5">📢 INFO: Cek Iuran, Laporan Kas, dan Agenda RT 05 Oleana Park.</marquee>
         </div>
     </div>
 
     <main class="container py-2">
+        <!-- MENU UTAMA -->
         <div class="row g-2 text-center">
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-warga')"><div class="icon-size">🔎</div><small>Cek Iuran</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas')"><div class="icon-size">💰</div><small>Kas RT</small></div></div>
@@ -57,41 +65,70 @@
 
         <hr class="my-3">
 
+        <!-- SECTION: CEK IURAN -->
         <div id="section-warga" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">🔎 CEK IURAN WARGA</h6>
-            <div class="input-group mb-3"><input type="text" id="inputBlok" class="form-control" placeholder="Ketik Blok (Contoh: A2 NO 23)"><button class="btn btn-primary fw-bold" onclick="cariRiwayat()">CARI</button></div>
-            <div id="hasil-pencarian" style="display:none;"><div class="table-responsive"><table class="table mb-0 text-center small"><tbody id="tabel-riwayat"></tbody></table></div></div>
+            <div class="input-group mb-3">
+                <input type="text" id="inputBlok" class="form-control" placeholder="Ketik Blok (Contoh: A2 NO 23)">
+                <button class="btn btn-primary fw-bold" onclick="cariRiwayat()">CARI</button>
+            </div>
+            <div id="hasil-pencarian" style="display:none;">
+                <div class="table-responsive">
+                    <table class="table mb-0 text-center small">
+                        <tbody id="tabel-riwayat"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
+        <!-- SECTION: KAS RT -->
         <div id="section-kas" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">💰 LAPORAN KAS RT</h6>
-            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center"><small class="text-muted fw-bold">SALDO AKHIR</small><h3 class="fw-bold text-primary mt-1" id="total-saldo">Rp 0</h3></div>
-            <div id="list-kas" class="table-responsive p-3"><p class="text-center text-muted">Memuat data...</p></div>
+            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
+                <small class="text-muted fw-bold">SALDO AKHIR</small>
+                <h3 class="fw-bold text-primary mt-1" id="total-saldo">Rp 0</h3>
+            </div>
+            <div id="list-kas" class="table-responsive p-3">
+                <p class="text-center text-muted">Memuat data...</p>
+            </div>
         </div>
 
+        <!-- SECTION: AGENDA -->
         <div id="section-agenda" class="content-section active-section">
             <h6 class="fw-bold text-primary mb-3">📅 Agenda Kegiatan</h6>
             <div id="list-agenda"></div>
         </div>
 
+        <!-- SECTION: SURAT -->
         <div id="section-surat" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">📁 Arsip Surat</h6>
             <div id="list-surat" class="table-responsive p-2"></div>
         </div>
 
+        <!-- SECTION: SARAN -->
         <div id="section-saran" class="content-section">
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScitJ8ETSNOci1Ool2Qs9GggIbfr3N4Mm9_hg4WmsrKdwtWvQ/viewform?embedded=true" width="100%" height="600" frameborder="0">Memuat…</iframe>
         </div>
 
+        <!-- SECTION: INTERNAL -->
         <div id="section-internal" class="content-section">
             <h6 class="fw-bold text-danger mb-3 text-center">🔒 DATABASE WARGA</h6>
-            <div class="table-responsive"><table class="table table-sm small"><thead class="table-dark"><tr id="header-db"></tr></thead><tbody id="body-db"></tbody></table></div>
+            <div class="table-responsive">
+                <table class="table table-sm small">
+                    <thead class="table-dark"><tr id="header-db"></tr></thead>
+                    <tbody id="body-db"></tbody>
+                </table>
+            </div>
         </div>
     </main>
 
     <script>
         const PIN_ADMIN = "1234";
-        const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clI0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
+        const REK_BCA = "5955097731";
+        const AN_REK = "Sumantri";
+
+        // LINK SPREADSHEET
+        const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
         const urlKas = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9IzJn8M1Emu0_LC4TY_cQik462FybKxEKgB9RaleHVqtOSXV17l1q_DTg2WG_a3DM2VYEzNEaKCI6/pub?gid=0&single=true&output=csv";
         const urlSurat = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIWCVJPnol6BmfzfrmVo3Dx7ucnA1j9iuQBQmzjTVFsRr-GiJ7injvHvlvHkbq_aykB-G6GA8JVnir/pub?output=csv";
         const urlWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT06nXtSsC_BB1RnsPRFTJyp9Nq7tqSkpN0GKVvtXLWIdewFJBMoCENViQWeN-Rw4DXqNCvQlHJswq7/pub?gid=0&single=true&output=csv";
@@ -118,13 +155,15 @@
             let inputRaw = document.getElementById('inputBlok').value;
             let inputBersih = inputRaw.toUpperCase().trim().replace(/[^A-Z0-9]/g, "");
             if(!inputBersih) return alert("Ketik nomor blok!");
+
             const dW = await fetchCSV(urlWarga);
             let html = ""; let found = false; let header = dW[0]; let namaWarga = "";
+
             for (let i = 0; i < dW.length; i++) {
                 let cellBlok = (dW[i][0] || "").replace(/[^A-Z0-9]/g, "").toUpperCase();
                 if (cellBlok === inputBersih) {
                     found = true;
-                    namaWarga = dW[i][1] ? dW[i][1].replace(/"/g,'').trim() : "Warga";
+                    namaWarga = dW[i][1] ? dW[i][1].replace(/"/g,'').trim() : "Warga RT 05";
                     for(let j = 2; j < dW[i].length; j++) {
                         let status = dW[i][j] ? dW[i][j].replace(/"/g,'').trim() : "";
                         if (status !== "") {
@@ -135,8 +174,14 @@
                     break;
                 }
             }
+
             if(found) {
-                document.getElementById('tabel-riwayat').innerHTML = `<tr><th colspan="2" class="table-dark text-center">${namaWarga}</th></tr>` + html;
+                let infoRek = `<tr><td colspan="2" class="bg-light p-3 text-center border-top">
+                    <small class="text-muted d-block">Transfer Iuran ke Bendahara:</small>
+                    <b class="text-primary d-block">BCA ${REK_BCA}</b>
+                    <span class="badge bg-secondary">A/n ${AN_REK}</span>
+                </td></tr>`;
+                document.getElementById('tabel-riwayat').innerHTML = `<tr><th colspan="2" class="table-dark text-center" style="border-radius:10px 10px 0 0">${namaWarga}</th></tr>` + html + infoRek;
                 document.getElementById('hasil-pencarian').style.display = "block";
             } else { alert("Data Blok tidak ditemukan!"); }
         }
@@ -154,35 +199,44 @@
                     htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0].replace(/"/g,'')}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
                 }
             });
+            let infoTransfer = `<div class="alert alert-primary py-2 mb-3 text-center" style="font-size:0.8rem"><b>Transfer Iuran:</b> BCA ${REK_BCA} (A/n ${AN_REK})</div>`;
             document.getElementById('total-saldo').innerText = formatRupiah(total);
-            document.getElementById('list-kas').innerHTML = htmlK;
+            document.getElementById('list-kas').innerHTML = infoTransfer + (htmlK || "Data kosong.");
 
             // Render Agenda
-            let htmlA = ""; dA.slice(1).forEach(r => {
-                if(r[0]) htmlA += `<div class="card border-0 shadow-sm rounded-4 p-3 mb-2"><b>${r[0].replace(/"/g,'')}</b><small class="text-muted">🗓️ ${r[1]} | 📍 ${r[2]}</small></div>`;
-            });
-            document.getElementById('list-agenda').innerHTML = htmlA || "Tidak ada agenda.";
+            let htmlA = ""; 
+            if (dA.length > 1) {
+                for (let i = 1; i < dA.length; i++) {
+                    let k = dA[i];
+                    if (k[0]) {
+                        htmlA += `<div class="card border-0 shadow-sm rounded-4 p-3 mb-2"><b>${k[0].replace(/"/g,'')}</b><small class="text-muted d-block mt-1">🗓️ ${k[1] || '-'} | 📍 ${k[2] || '-'}</small></div>`;
+                    }
+                }
+            }
+            document.getElementById('list-agenda').innerHTML = htmlA || "Belum ada agenda.";
 
             // Render Surat
             let htmlS = ""; dS.slice(1).forEach(r => {
-                if(r[0]) htmlS += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center"><span>${r[0].replace(/"/g,'')}</span><a href="${r[2].replace(/"/g,'')}" class="btn btn-sm btn-primary">Buka</a></div>`;
+                if(r[0]) htmlS += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center"><span>${r[0].replace(/"/g,'')}</span><a href="${r[2].replace(/"/g,'')}" class="btn btn-sm btn-primary px-3 shadow-sm">Buka</a></div>`;
             });
-            document.getElementById('list-surat').innerHTML = htmlS;
+            document.getElementById('list-surat').innerHTML = htmlS || "Belum ada surat.";
         }
 
         function bukaInternal() {
-            if(prompt("PIN:") === PIN_ADMIN) { showSection('section-internal'); loadDatabaseWarga(); }
+            if(prompt("PIN Admin:") === PIN_ADMIN) { showSection('section-internal'); loadDatabaseWarga(); }
         }
 
         async function loadDatabaseWarga() {
             const data = await fetchCSV(urlDatabaseWarga);
-            let h = ""; data[0].forEach(c => h += `<th>${c}</th>`);
+            if(data.length === 0) return;
+            let h = ""; data[0].forEach(c => h += `<th>${c.replace(/"/g,'')}</th>`);
             document.getElementById('header-db').innerHTML = h;
             let b = ""; for(let i=1; i<data.length; i++) {
-                b += "<tr>"; data[i].forEach(c => b += `<td>${c}</td>`); b += "</tr>";
+                b += "<tr>"; data[i].forEach(c => b += `<td>${c.replace(/"/g,'')}</td>`); b += "</tr>";
             }
             document.getElementById('body-db').innerHTML = b;
         }
+
         window.onload = initApp;
     </script>
 </body>
