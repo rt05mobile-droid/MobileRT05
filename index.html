@@ -33,6 +33,10 @@
         .kas-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; }
         .text-pemasukan { color: #198754; font-weight: 700; }
         .text-pengeluaran { color: #dc3545; font-weight: 700; }
+
+        /* Style Tambahan untuk Kategori Surat */
+        .surat-category-title { background-color: #e7f1ff; color: #0a58ca; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; margin-top: 15px; margin-bottom: 8px; border-left: 4px solid #0d6efd; }
+        .surat-item { padding: 10px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -99,10 +103,12 @@
             <div id="list-agenda"></div>
         </div>
 
-        <!-- SECTION: SURAT -->
+        <!-- SECTION: SURAT & ARSIP -->
         <div id="section-surat" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">📁 Arsip Surat</h6>
-            <div id="list-surat" class="table-responsive p-2"></div>
+            <h6 class="fw-bold text-primary mb-3 text-center">📁 Bank Data & Arsip RT</h6>
+            <div id="list-surat" class="table-responsive p-3">
+                <p class="text-center text-muted">Memuat dokumen...</p>
+            </div>
         </div>
 
         <!-- SECTION: SARAN -->
@@ -215,11 +221,32 @@
             }
             document.getElementById('list-agenda').innerHTML = htmlA || "Belum ada agenda.";
 
-            // Render Surat
-            let htmlS = ""; dS.slice(1).forEach(r => {
-                if(r[0]) htmlS += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center"><span>${r[0].replace(/"/g,'')}</span><a href="${r[2].replace(/"/g,'')}" class="btn btn-sm btn-primary px-3 shadow-sm">Buka</a></div>`;
+            // Render Surat (Dengan Fitur Grouping Kategori)
+            let groupedSurat = {};
+            dS.slice(1).forEach(r => {
+                if(r[0]) {
+                    let namaDokumen = r[0].replace(/"/g,'').trim();
+                    let kategori = r[1] ? r[1].replace(/"/g,'').trim() : 'Lain-lain';
+                    let link = r[2] ? r[2].replace(/"/g,'').trim() : '#';
+                    
+                    if(!groupedSurat[kategori]) {
+                        groupedSurat[kategori] = [];
+                    }
+                    groupedSurat[kategori].push({ nama: namaDokumen, link: link });
+                }
             });
-            document.getElementById('list-surat').innerHTML = htmlS || "Belum ada surat.";
+
+            let htmlS = "";
+            for (let kat in groupedSurat) {
+                htmlS += `<div class="surat-category-title">${kat}</div>`;
+                groupedSurat[kat].forEach(doc => {
+                    htmlS += `<div class="surat-item">
+                        <span class="small fw-semibold text-dark">${doc.nama}</span>
+                        <a href="${doc.link}" target="_blank" class="btn btn-sm btn-primary px-3 shadow-sm" style="font-size:12px;">Buka</a>
+                    </div>`;
+                });
+            }
+            document.getElementById('list-surat').innerHTML = htmlS || "<p class='text-center text-muted'>Belum ada surat.</p>";
         }
 
         function bukaInternal() {
