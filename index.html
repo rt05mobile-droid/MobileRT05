@@ -34,10 +34,11 @@
         .text-pemasukan { color: #198754; font-weight: 700; }
         .text-pengeluaran { color: #dc3545; font-weight: 700; }
 
-        /* Style Tambahan untuk Kategori Surat */
         .surat-category-title { background-color: #e7f1ff; color: #0a58ca; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; margin-top: 15px; margin-bottom: 8px; border-left: 4px solid #0d6efd; }
         .surat-item { padding: 10px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         
+        .sub-tab-btn { font-size: 0.75rem; font-weight: 700; border-radius: 10px; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -61,10 +62,11 @@
         <div class="row g-2 text-center">
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-warga')"><div class="icon-size">🔎</div><small>Cek Iuran</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas')"><div class="icon-size">💰</div><small>Kas RT</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas-dansos')"><div class="icon-size">🤝</div><small>Kas Dansos</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-surat')"><div class="icon-size">📁</div><small>Surat</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-agenda')"><div class="icon-size">📅</div><small>Agenda</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">🔒</div><small>Internal</small></div></div>
+            <div class="col-4 ms-auto me-auto mt-2"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekretariat</small></div></div>
         </div>
 
         <hr class="my-3">
@@ -97,13 +99,25 @@
             </div>
         </div>
 
+        <!-- SECTION: KAS DANSOS -->
+        <div id="section-kas-dansos" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">🤝 LAPORAN KAS DANA SOSIAL (DANSOS)</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
+                <small class="text-muted fw-bold">SALDO AKHIR KAS DANSOS</small>
+                <h3 class="fw-bold text-success mt-1" id="total-saldo-dansos">Rp 0</h3>
+            </div>
+            <div id="list-kas-dansos" class="table-responsive p-3">
+                <p class="text-center text-muted">Memuat data kas dansos...</p>
+            </div>
+        </div>
+
         <!-- SECTION: AGENDA -->
         <div id="section-agenda" class="content-section active-section">
             <h6 class="fw-bold text-primary mb-3">📅 Agenda Kegiatan</h6>
             <div id="list-agenda"></div>
         </div>
 
-        <!-- SECTION: SURAT & ARSIP -->
+        <!-- SECTION: SURAT & ARSIP PUBLIC -->
         <div id="section-surat" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">📁 Bank Data & Arsip RT</h6>
             <div id="list-surat" class="table-responsive p-3">
@@ -116,15 +130,32 @@
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScitJ8ETSNOci1Ool2Qs9GggIbfr3N4Mm9_hg4WmsrKdwtWvQ/viewform?embedded=true" width="100%" height="600" frameborder="0">Memuat…</iframe>
         </div>
 
-        <!-- SECTION: INTERNAL -->
+        <!-- SECTION: ADMIN SEKRETARIAT -->
         <div id="section-internal" class="content-section">
-            <h6 class="fw-bold text-danger mb-3 text-center">🔒 DATABASE WARGA</h6>
-            <div class="table-responsive">
-                <table class="table table-sm small">
-                    <thead class="table-dark"><tr id="header-db"></tr></thead>
-                    <tbody id="body-db"></tbody>
-                </table>
+            <h6 class="fw-bold text-primary mb-3 text-center">💼 ADMIN SEKRETARIAT RT 05</h6>
+            
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <button class="btn btn-outline-primary sub-tab-btn active" onclick="switchAdminTab('tab-db-warga', this)">👥 Data Warga</button>
+                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat-Surat Penting</button>
             </div>
+
+            <!-- TAB 1: DATA WARGA -->
+            <div id="tab-db-warga" class="admin-sub-content">
+                <div class="table-responsive">
+                    <table class="table table-sm small">
+                        <thead class="table-dark"><tr id="header-db"></tr></thead>
+                        <tbody id="body-db"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: SURAT-SURAT PENTING (DINAMIS DARI SPREADSHEET) -->
+            <div id="tab-surat-penting" class="admin-sub-content" style="display:none;">
+                <div id="list-surat-penting" class="table-responsive p-3">
+                    <p class="text-center text-muted">Memuat berkas rahasia & surat penting...</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -139,10 +170,21 @@
         const urlSurat = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIWCVJPnol6BmfzfrmVo3Dx7ucnA1j9iuQBQmzjTVFsRr-GiJ7injvHvlvHkbq_aykB-G6GA8JVnir/pub?output=csv";
         const urlWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT06nXtSsC_BB1RnsPRFTJyp9Nq7tqSkpN0GKVvtXLWIdewFJBMoCENViQWeN-Rw4DXqNCvQlHJswq7/pub?gid=0&single=true&output=csv";
         const urlDatabaseWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ08pVNKL0IHTm8U7Ar79dJwFdqxh8kCZnVjhTzzeew7a4DdIKHLggTdWVGAnpXsX4VdGUz7LNj2cL/pub?gid=0&single=true&output=csv";
+        const urlKasDansos = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Z423Kht4DVS_4buGSK9WzCfUrHcBoxmGXAhIPI8Y4Z0ZCrY5aAGCUPa7CpPGSs7odrkxtcudiHRI/pub?output=csv"; 
+        
+        // Link CSV Surat-Surat Penting
+        const urlSuratPenting = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS93WBkMrAZJRFe6vZ80gBPJdicaUtzeciWkww4N5IwxuHLKX6aZ-FYu_miLkK-7QnE8SxtPsbJ6KZj/pub?output=csv";
 
         function showSection(id) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active-section'));
             document.getElementById(id).classList.add('active-section');
+        }
+
+        function switchAdminTab(tabId, btnElement) {
+            document.querySelectorAll('.admin-sub-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            btnElement.classList.add('active');
         }
 
         async function fetchCSV(url) {
@@ -192,10 +234,55 @@
             } else { alert("Data Blok tidak ditemukan!"); }
         }
 
+        async function loadKasDansos() {
+            const dK = await fetchCSV(urlKasDansos);
+            let total = 0; let htmlK = "";
+            dK.slice(1).forEach(r => {
+                if(r[1]) {
+                    let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
+                    total += nominal;
+                    let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
+                    htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0].replace(/"/g,'')}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
+                }
+            });
+            document.getElementById('total-saldo-dansos').innerText = formatRupiah(total);
+            document.getElementById('list-kas-dansos').innerHTML = htmlK || "<p class='text-center text-muted'>Data Dansos kosong.</p>";
+        }
+
+        async function loadSuratPenting() {
+            const dSP = await fetchCSV(urlSuratPenting);
+            let groupedSuratPenting = {};
+            
+            dSP.slice(1).forEach(r => {
+                if(r[0]) {
+                    let namaDokumen = r[0].replace(/"/g,'').trim();
+                    let kategori = r[1] ? r[1].replace(/"/g,'').trim() : 'Dokumen Rahasia';
+                    let link = r[2] ? r[2].replace(/"/g,'').trim() : '#';
+                    
+                    if(!groupedSuratPenting[kategori]) {
+                        groupedSuratPenting[kategori] = [];
+                    }
+                    groupedSuratPenting[kategori].push({ nama: namaDokumen, link: link });
+                }
+            });
+
+            let htmlSP = "";
+            for (let kat in groupedSuratPenting) {
+                htmlSP += `<div class="surat-category-title">${kat}</div>`;
+                groupedSuratPenting[kat].forEach(doc => {
+                    htmlSP += `<div class="surat-item">
+                        <span class="small fw-semibold text-dark">${doc.nama}</span>
+                        <a href="${doc.link}" target="_blank" class="btn btn-sm btn-success px-3 shadow-sm" style="font-size:12px;">Unduh / Buka</a>
+                    </div>`;
+                });
+            }
+            document.getElementById('list-surat-penting').innerHTML = htmlSP || "<p class='text-center text-muted'>Belum ada surat penting.</p>";
+        }
+
         async function initApp() {
             const [dK, dS, dA] = await Promise.all([fetchCSV(urlKas), fetchCSV(urlSurat), fetchCSV(urlAgenda)]);
             
-            // Render Kas
+            // Render Kas RT
             let total = 0; let htmlK = "";
             dK.slice(1).forEach(r => {
                 if(r[1]) {
@@ -209,6 +296,9 @@
             document.getElementById('total-saldo').innerText = formatRupiah(total);
             document.getElementById('list-kas').innerHTML = infoTransfer + (htmlK || "Data kosong.");
 
+            // Load Data Kas Dansos
+            loadKasDansos();
+
             // Render Agenda
             let htmlA = ""; 
             if (dA.length > 1) {
@@ -221,7 +311,7 @@
             }
             document.getElementById('list-agenda').innerHTML = htmlA || "Belum ada agenda.";
 
-            // Render Surat (Dengan Fitur Grouping Kategori)
+            // Render Surat Public
             let groupedSurat = {};
             dS.slice(1).forEach(r => {
                 if(r[0]) {
@@ -250,7 +340,11 @@
         }
 
         function bukaInternal() {
-            if(prompt("PIN Admin:") === PIN_ADMIN) { showSection('section-internal'); loadDatabaseWarga(); }
+            if(prompt("PIN Admin Sekretariat:") === PIN_ADMIN) { 
+                showSection('section-internal'); 
+                loadDatabaseWarga(); 
+                loadSuratPenting();
+            }
         }
 
         async function loadDatabaseWarga() {
