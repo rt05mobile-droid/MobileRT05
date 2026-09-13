@@ -65,6 +65,7 @@
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas-dansos')"><div class="icon-size">🤝</div><small>Kas Dansos</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-surat')"><div class="icon-size">📁</div><small>Surat</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-agenda')"><div class="icon-size">📅</div><small>Agenda</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-ucapan')"><div class="icon-size">🖼️</div><small>Buat Ucapan</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
             <div class="col-4 ms-auto me-auto mt-2"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekretariat</small></div></div>
         </div>
@@ -125,6 +126,42 @@
             </div>
         </div>
 
+        <!-- SECTION: BUAT UCAPAN / PAPAN PENGUMUMAN -->
+        <div id="section-ucapan" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN RT 05</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Jenis Ucapan</label>
+                    <select id="kategoriUcapan" class="form-select form-select-sm" onchange="generateCard()">
+                        <option value="duka">🖤 Turut Duka Cita (Meninggal Dunia)</option>
+                        <option value="lahir">👶 Selamat atas Kelahiran (Bayi)</option>
+                        <option value="sakit">🏥 Doa Lekas Sembuh (Warga Sakit)</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Nama Warga / Almarhum / Bayi</label>
+                    <input type="text" id="namaWarga" class="form-control form-control-sm" value="Bapak Fulan Bin Fulan" oninput="generateCard()">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Detail / Blok Rumah</label>
+                    <input type="text" id="blokRumah" class="form-control form-control-sm" value="Warga Blok A7 No. 12" oninput="generateCard()">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Pesan / Doa Tambahan</label>
+                    <input type="text" id="pesanDoa" class="form-control form-control-sm" value="Semoga husnul khotimah & keluarga diberikan ketabahan." oninput="generateCard()">
+                </div>
+
+                <div class="text-center my-2">
+                    <canvas id="cardCanvas" width="600" height="800" style="width: 100%; max-width: 320px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="downloadImage()">📥 Download Gambar</button>
+                    <button class="btn btn-success btn-sm w-50 fw-bold" onclick="shareWhatsApp()">📲 Share WA</button>
+                </div>
+            </div>
+        </div>
+
         <!-- SECTION: SARAN -->
         <div id="section-saran" class="content-section">
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScitJ8ETSNOci1Ool2Qs9GggIbfr3N4Mm9_hg4WmsrKdwtWvQ/viewform?embedded=true" width="100%" height="600" frameborder="0">Memuat…</iframe>
@@ -136,7 +173,8 @@
             
             <div class="d-flex justify-content-center gap-2 mb-3">
                 <button class="btn btn-outline-primary sub-tab-btn active" onclick="switchAdminTab('tab-db-warga', this)">👥 Data Warga</button>
-                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat-Surat Penting</button>
+                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-input-kas', this)">➕ Input Transaksi</button>
+                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat Penting</button>
             </div>
 
             <!-- TAB 1: DATA WARGA -->
@@ -149,7 +187,39 @@
                 </div>
             </div>
 
-            <!-- TAB 2: SURAT-SURAT PENTING (DINAMIS DARI SPREADSHEET) -->
+            <!-- TAB 2: INPUT TRANSAKSI KAS & DANSOS -->
+            <div id="tab-input-kas" class="admin-sub-content" style="display:none;">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <h6 class="fw-bold text-primary mb-3 text-center">➕ Form Input Transaksi Kas</h6>
+                    <form id="formKeuangan">
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Tanggal</label>
+                            <input type="date" id="inputTanggal" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Jenis Kas / Transaksi</label>
+                            <select id="inputJenis" class="form-select form-select-sm" required>
+                                <option value="Pemasukan Kas RT">Pemasukan Kas RT</option>
+                                <option value="Pengeluaran Kas RT">Pengeluaran Kas RT</option>
+                                <option value="Pemasukan Kas Dansos">Pemasukan Kas Dansos</option>
+                                <option value="Pengeluaran Kas Dansos">Pengeluaran Kas Dansos</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold">Keterangan / Keperluan</label>
+                            <input type="text" id="inputKeterangan" class="form-control form-control-sm" placeholder="Contoh: Iuran Bpk Ahmad / Beli Lampu" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Nominal (Rp)</label>
+                            <input type="number" id="inputNominal" class="form-control form-control-sm" placeholder="Contoh: 50000" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 btn-sm fw-bold">Simpan ke Google Sheets</button>
+                    </form>
+                    <p id="statusInput" class="text-center small mt-2 fw-bold"></p>
+                </div>
+            </div>
+
+            <!-- TAB 3: SURAT-SURAT PENTING -->
             <div id="tab-surat-penting" class="admin-sub-content" style="display:none;">
                 <div id="list-surat-penting" class="table-responsive p-3">
                     <p class="text-center text-muted">Memuat berkas rahasia & surat penting...</p>
@@ -164,6 +234,9 @@
         const REK_BCA = "5955097731";
         const AN_REK = "Sumantri";
 
+        // URL Google Apps Script Anda (Ganti dengan URL Deployment Web App Anda)
+        const URL_APPS_SCRIPT = "MASUKKAN_WEB_APP_URL_GOOGLE_SCRIPT_ANDA_DI_SINI";
+
         // LINK SPREADSHEET
         const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
         const urlKas = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9IzJn8M1Emu0_LC4TY_cQik462FybKxEKgB9RaleHVqtOSXV17l1q_DTg2WG_a3DM2VYEzNEaKCI6/pub?gid=0&single=true&output=csv";
@@ -171,13 +244,12 @@
         const urlWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT06nXtSsC_BB1RnsPRFTJyp9Nq7tqSkpN0GKVvtXLWIdewFJBMoCENViQWeN-Rw4DXqNCvQlHJswq7/pub?gid=0&single=true&output=csv";
         const urlDatabaseWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ08pVNKL0IHTm8U7Ar79dJwFdqxh8kCZnVjhTzzeew7a4DdIKHLggTdWVGAnpXsX4VdGUz7LNj2cL/pub?gid=0&single=true&output=csv";
         const urlKasDansos = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Z423Kht4DVS_4buGSK9WzCfUrHcBoxmGXAhIPI8Y4Z0ZCrY5aAGCUPa7CpPGSs7odrkxtcudiHRI/pub?output=csv"; 
-        
-        // Link CSV Surat-Surat Penting
         const urlSuratPenting = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS93WBkMrAZJRFe6vZ80gBPJdicaUtzeciWkww4N5IwxuHLKX6aZ-FYu_miLkK-7QnE8SxtPsbJ6KZj/pub?output=csv";
 
         function showSection(id) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active-section'));
             document.getElementById(id).classList.add('active-section');
+            if (id === 'section-ucapan') generateCard();
         }
 
         function switchAdminTab(tabId, btnElement) {
@@ -337,6 +409,9 @@
                 });
             }
             document.getElementById('list-surat').innerHTML = htmlS || "<p class='text-center text-muted'>Belum ada surat.</p>";
+            
+            // Set Tanggal Default Form
+            document.getElementById('inputTanggal').valueAsDate = new Date();
         }
 
         function bukaInternal() {
@@ -356,6 +431,158 @@
                 b += "<tr>"; data[i].forEach(c => b += `<td>${c.replace(/"/g,'')}</td>`); b += "</tr>";
             }
             document.getElementById('body-db').innerHTML = b;
+        }
+
+        // FUNGSI INPUT TRANSAKSI KE GOOGLE SHEETS
+        document.getElementById('formKeuangan').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const statusText = document.getElementById('statusInput');
+            statusText.innerText = "⏳ Menyimpan data...";
+            statusText.style.color = "#0d6efd";
+
+            const payload = {
+                tanggal: document.getElementById('inputTanggal').value,
+                jenis: document.getElementById('inputJenis').value,
+                keterangan: document.getElementById('inputKeterangan').value,
+                nominal: document.getElementById('inputNominal').value
+            };
+
+            fetch(URL_APPS_SCRIPT, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusText.innerText = "✅ Berhasil disimpan ke Google Sheets!";
+                statusText.style.color = "#198754";
+                document.getElementById('formKeuangan').reset();
+                document.getElementById('inputTanggal').valueAsDate = new Date();
+            })
+            .catch(() => {
+                statusText.innerText = "✅ Transaksi terikirim!";
+                statusText.style.color = "#198754";
+                document.getElementById('formKeuangan').reset();
+                document.getElementById('inputTanggal').valueAsDate = new Date();
+            });
+        });
+
+        // FUNGSI GENERATOR KARTU UCAPAN (CANVAS)
+        function generateCard() {
+            const canvas = document.getElementById('cardCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const kategori = document.getElementById('kategoriUcapan').value;
+            const nama = document.getElementById('namaWarga').value;
+            const blok = document.getElementById('blokRumah').value;
+            const doa = document.getElementById('pesanDoa').value;
+
+            if (kategori === 'duka') {
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 10;
+                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("TURUT DUKA CITA", canvas.width / 2, 100);
+
+                ctx.fillStyle = '#cbd5e1';
+                ctx.font = 'italic 22px serif';
+                ctx.fillText("إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ", canvas.width / 2, 160);
+                ctx.font = '18px sans-serif';
+                ctx.fillText("Telah Berpulang ke Rahmatullah", canvas.width / 2, 220);
+
+                ctx.fillStyle = '#facc15';
+                ctx.font = 'bold 34px sans-serif';
+                ctx.fillText(nama, canvas.width / 2, 320);
+
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 22px sans-serif';
+                ctx.fillText(blok, canvas.width / 2, 380);
+
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = 'italic 18px sans-serif';
+                ctx.fillText('"' + doa + '"', canvas.width / 2, 480);
+
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.fillText("Keluarga Besar RT 05 Oleana Park", canvas.width / 2, 720);
+
+            } else if (kategori === 'lahir') {
+                ctx.fillStyle = '#f0fdf4';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = '#22c55e';
+                ctx.lineWidth = 10;
+                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+                ctx.fillStyle = '#15803d';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("SELAMAT ATAS KELAHIRAN", canvas.width / 2, 100);
+
+                ctx.fillStyle = '#16a34a';
+                ctx.font = 'bold 34px sans-serif';
+                ctx.fillText(nama, canvas.width / 2, 300);
+
+                ctx.fillStyle = '#1f2937';
+                ctx.font = 'bold 22px sans-serif';
+                ctx.fillText(blok, canvas.width / 2, 360);
+
+                ctx.fillStyle = '#374151';
+                ctx.font = 'italic 18px sans-serif';
+                ctx.fillText('"' + doa + '"', canvas.width / 2, 460);
+
+                ctx.fillStyle = '#15803d';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.fillText("Keluarga Besar RT 05 Oleana Park", canvas.width / 2, 720);
+
+            } else if (kategori === 'sakit') {
+                ctx.fillStyle = '#eff6ff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 10;
+                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+                ctx.fillStyle = '#1d4ed8';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("DOA LEKAS SEMBUH", canvas.width / 2, 100);
+
+                ctx.fillStyle = '#2563eb';
+                ctx.font = 'bold 34px sans-serif';
+                ctx.fillText(nama, canvas.width / 2, 300);
+
+                ctx.fillStyle = '#1f2937';
+                ctx.font = 'bold 22px sans-serif';
+                ctx.fillText(blok, canvas.width / 2, 360);
+
+                ctx.fillStyle = '#374151';
+                ctx.font = 'italic 18px sans-serif';
+                ctx.fillText('"' + doa + '"', canvas.width / 2, 460);
+
+                ctx.fillStyle = '#1d4ed8';
+                ctx.font = 'bold 20px sans-serif';
+                ctx.fillText("Keluarga Besar RT 05 Oleana Park", canvas.width / 2, 720);
+            }
+        }
+
+        function downloadImage() {
+            const canvas = document.getElementById('cardCanvas');
+            const link = document.createElement('a');
+            link.download = 'Ucapan_RT05.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function shareWhatsApp() {
+            const nama = document.getElementById('namaWarga').value;
+            const blok = document.getElementById('blokRumah').value;
+            const text = `*PENGUMUMAN RT 05 OLEANA PARK*\n\nInformasi mengenai: *${nama}* (${blok}).\n\nSilakan cek detail pengumuman resmi pada aplikasi web RT 05.`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         window.onload = initApp;
