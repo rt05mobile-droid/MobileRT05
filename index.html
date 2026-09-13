@@ -458,7 +458,7 @@
                 document.getElementById('inputTanggal').valueAsDate = new Date();
             })
             .catch(() => {
-                statusText.innerText = "✅ Transaksi terikirim!";
+                statusText.innerText = "✅ Transaksi terkirim!";
                 statusText.style.color = "#198754";
                 document.getElementById('formKeuangan').reset();
                 document.getElementById('inputTanggal').valueAsDate = new Date();
@@ -581,11 +581,13 @@
         function shareWhatsApp() {
             const nama = document.getElementById('namaWarga').value;
             const blok = document.getElementById('blokRumah').value;
-            const text = `*PENGUMUMAN RT 05 OLEANA PARK*\n\nInformasi mengenai: *${nama}* (${blok}).\n\nSilakan cek detail pengumuman resmi pada aplikasi web RT 05.`;
+            const doa = document.getElementById('pesanDoa').value;
+            const text = `*PENGUMUMAN RT 05 OLEANA PARK*\n\nInformasi mengenai: *${nama}* (${blok}).\n\n"${doa}"\n\n_Salam hangat,_\n*Pengurus RT 05 Oleana Park*`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        window.onload = initApp;
+        // Jalankan aplikasi saat halaman selesai dimuat
+        document.addEventListener("DOMContentLoaded", initApp);
     </script>
 </body>
 </html>
