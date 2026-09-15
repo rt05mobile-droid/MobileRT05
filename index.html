@@ -18,7 +18,7 @@
         .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
         .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
         
-        /* GAYA KARTU MENU (INTERAKTIF & BEBAS HAMBATAN KLIK) */
+        /* GAYA KARTU MENU (MEMASTIKAN SELALU BISA DIKLIK DI GITHUB PAGES) */
         .card-menu { 
             border: none; 
             border-radius: 18px; 
@@ -34,11 +34,9 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             position: relative;
-            z-index: 10;
+            z-index: 100;
         }
         .card-menu:active { transform: scale(0.92); background-color: #f8f9fa; }
-        
-        /* MEMASTIKAN IKON & TEKS TIDAK MENYERAP EVENT KLIK */
         .card-menu * { pointer-events: none !important; }
         
         .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
@@ -57,9 +55,7 @@
         .text-pemasukan { color: #198754; font-weight: 700; }
         .text-pengeluaran { color: #dc3545; font-weight: 700; }
 
-        .surat-category-title { background-color: #e7f1ff; color: #0a58ca; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; margin-top: 15px; margin-bottom: 8px; border-left: 4px solid #0d6efd; }
         .surat-item { padding: 10px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        
         .sub-tab-btn { font-size: 0.75rem; font-weight: 700; border-radius: 10px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -92,22 +88,15 @@
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-ucapan')"><div class="icon-size">🖼️</div><small>Buat Ucapan</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
             
-            <!-- TOMBOL INPUT KAS DENGAN IKON UANG + PANAH BIRU SVG -->
             <div class="col-4">
                 <div class="card card-menu card-menu-input" onclick="bukaInputKas()">
                     <div class="icon-size">
                         <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Panah Atas (Biru) -->
                             <path d="M54 32 H65 V18 H76 L59 3 L42 18 H54 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
-                            <!-- Panah Bawah (Biru) -->
                             <path d="M46 68 H35 V82 H24 L41 97 L58 82 H46 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
-                            <!-- Badan Uang Kertas (Hijau) -->
                             <rect x="10" y="26" width="80" height="48" rx="5" fill="#8BE653" stroke="#000000" stroke-width="5"/>
-                            <!-- Bingkai Dalam Uang -->
                             <path d="M19 32 C24 32 24 32 24 36 V64 C24 68 19 68 19 68 H81 C76 68 76 68 76 64 V36 C76 32 81 32 81 32 Z" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>
-                            <!-- Lingkaran Tengah Dollar -->
                             <circle cx="50" cy="50" r="15" fill="#8BE653" stroke="#000000" stroke-width="5"/>
-                            <!-- Simbol Dollar ($) -->
                             <path d="M50 41 V59 M45 44 C45 44 47.5 42 50.5 42 C53.5 42 54.5 44.5 51.5 47.5 C48.5 50.5 45.5 51.5 48.5 54.5 C51.5 57.5 55 56.5 55 56.5" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
@@ -166,7 +155,7 @@
             <div id="list-agenda"></div>
         </div>
 
-        <!-- SECTION: SURAT & ARSIP PUBLIC -->
+        <!-- SECTION: SURAT -->
         <div id="section-surat" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">📁 Bank Data & Arsip RT</h6>
             <div id="list-surat" class="table-responsive p-3">
@@ -174,21 +163,18 @@
             </div>
         </div>
 
-        <!-- SECTION: BUAT UCAPAN DUKA CITA -->
+        <!-- SECTION: BUAT UCAPAN -->
         <div id="section-ucapan" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN DUKA CITA</h6>
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                
                 <div class="mb-2">
                     <label class="form-label small fw-bold">Unggah Foto Almarhum/ah (Opsional)</label>
                     <input type="file" id="inputFoto" class="form-control form-control-sm" accept="image/*" onchange="handleImageUpload(event)">
                 </div>
-
                 <div class="mb-2">
                     <label class="form-label small fw-bold">Nama Almarhum / Almarhumah</label>
                     <input type="text" id="namaMeninggal" class="form-control form-control-sm" value="Alm. Ibu Sutimi" oninput="generateCard()">
                 </div>
-
                 <div class="row g-2 mb-2">
                     <div class="col-6">
                         <label class="form-label small fw-bold">Orang Tua dari (Bpk)</label>
@@ -199,16 +185,13 @@
                         <input type="text" id="namaIbu" class="form-control form-control-sm" value="Aisyah" oninput="generateCard()">
                     </div>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Alamat / Blok Rumah</label>
                     <input type="text" id="alamatBlok" class="form-control form-control-sm" value="Blok A2 No. 15" oninput="generateCard()">
                 </div>
-
                 <div class="text-center my-2">
                     <canvas id="cardCanvas" width="1000" height="700" style="width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
                 </div>
-
                 <div class="d-flex gap-2 mt-3">
                     <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="downloadImage()">📥 Download Gambar</button>
                     <button class="btn btn-success btn-sm w-50 fw-bold" onclick="shareWhatsApp()">📲 Share WA</button>
@@ -256,13 +239,10 @@
         <!-- SECTION: ADMIN SEKRETARIAT -->
         <div id="section-internal" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">💼 ADMIN SEKRETARIAT RT 05</h6>
-            
             <div class="d-flex justify-content-center gap-2 mb-3">
                 <button class="btn btn-outline-primary sub-tab-btn active" onclick="switchAdminTab('tab-db-warga', this)">👥 Data Warga</button>
                 <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat Penting</button>
             </div>
-
-            <!-- TAB 1: DATA WARGA -->
             <div id="tab-db-warga" class="admin-sub-content">
                 <div class="table-responsive">
                     <table class="table table-sm small">
@@ -271,14 +251,11 @@
                     </table>
                 </div>
             </div>
-
-            <!-- TAB 2: SURAT-SURAT PENTING -->
             <div id="tab-surat-penting" class="admin-sub-content" style="display:none;">
                 <div id="list-surat-penting" class="table-responsive p-3">
                     <p class="text-center text-muted">Memuat berkas rahasia & surat penting...</p>
                 </div>
             </div>
-
         </div>
     </main>
 
@@ -287,7 +264,8 @@
         const REK_BCA = "5955097731";
         const AN_REK = "Sumantri";
 
-        const URL_APPS_SCRIPT = "MASUKKAN_WEB_APP_URL_GOOGLE_SCRIPT_ANDA_DI_SINI";
+        // SILAKAN GANTI ISI VARIABEL DI BAWAH JIKA SUDAH ADA URL GOOGLE APPS SCRIPT WEB APP
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/GANTI_DENGAN_ID_SCRIPT_ANDA/exec";
 
         const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
         const urlKas = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9IzJn8M1Emu0_LC4TY_cQik462FybKxEKgB9RaleHVqtOSXV17l1q_DTg2WG_a3DM2VYEzNEaKCI6/pub?gid=0&single=true&output=csv";
@@ -303,9 +281,16 @@
         rtLogoImg.onload = function() { generateCard(); };
 
         function showSection(id) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active-section'));
-            document.getElementById(id).classList.add('active-section');
-            if (id === 'section-ucapan') generateCard();
+            try {
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active-section'));
+                let target = document.getElementById(id);
+                if (target) {
+                    target.classList.add('active-section');
+                    if (id === 'section-ucapan') generateCard();
+                }
+            } catch (e) {
+                console.error("Error pada showSection:", e);
+            }
         }
 
         function bukaInputKas() {
@@ -338,5 +323,18 @@
         async function fetchCSV(url) {
             try {
                 const response = await fetch(url + '&t=' + new Date().getTime());
+                if (!response.ok) throw new Error("Gagal mengambil data dari server");
                 const data = await response.text();
-                return data.split("\n").filter(
+                return data.split("\n").filter(row => row.trim() !== "").map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
+            } catch (e) { 
+                console.warn("Gagal Fetch CSV:", url, e);
+                return []; 
+            }
+        }
+
+        function formatRupiah(angka) {
+            return "Rp " + Math.abs(parseInt(angka) || 0).toLocaleString('id-ID');
+        }
+
+        async function cariRiwayat() {
+            let inputRaw = document.getElem
