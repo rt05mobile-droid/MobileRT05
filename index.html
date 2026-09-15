@@ -18,9 +18,30 @@
         .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
         .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
         
-        .card-menu { border: none; border-radius: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); cursor: pointer; transition: 0.2s; background: white; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* GAYA KARTU MENU (INTERAKTIF & BEBAS HAMBATAN KLIK) */
+        .card-menu { 
+            border: none; 
+            border-radius: 18px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06); 
+            cursor: pointer; 
+            transition: transform 0.15s ease, background-color 0.15s ease; 
+            background: white; 
+            height: 90px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            z-index: 10;
+        }
         .card-menu:active { transform: scale(0.92); background-color: #f8f9fa; }
-        .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; }
+        
+        /* MEMASTIKAN IKON & TEKS TIDAK MENYERAP EVENT KLIK */
+        .card-menu * { pointer-events: none !important; }
+        
+        .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
         .card-menu small { font-size: 0.75rem; font-weight: 700; color: #0a58ca; }
         
         .card-menu-input { border: 2px solid #ffc107; background: #fffdf5; }
@@ -70,7 +91,30 @@
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-agenda')"><div class="icon-size">📅</div><small>Agenda</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-ucapan')"><div class="icon-size">🖼️</div><small>Buat Ucapan</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
-            <div class="col-4"><div class="card card-menu card-menu-input" onclick="bukaInputKas()"><div class="icon-size">➕</div><small>Input Kas</small></div></div>
+            
+            <!-- TOMBOL INPUT KAS DENGAN IKON UANG + PANAH BIRU SVG -->
+            <div class="col-4">
+                <div class="card card-menu card-menu-input" onclick="bukaInputKas()">
+                    <div class="icon-size">
+                        <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Panah Atas (Biru) -->
+                            <path d="M54 32 H65 V18 H76 L59 3 L42 18 H54 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
+                            <!-- Panah Bawah (Biru) -->
+                            <path d="M46 68 H35 V82 H24 L41 97 L58 82 H46 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
+                            <!-- Badan Uang Kertas (Hijau) -->
+                            <rect x="10" y="26" width="80" height="48" rx="5" fill="#8BE653" stroke="#000000" stroke-width="5"/>
+                            <!-- Bingkai Dalam Uang -->
+                            <path d="M19 32 C24 32 24 32 24 36 V64 C24 68 19 68 19 68 H81 C76 68 76 68 76 64 V36 C76 32 81 32 81 32 Z" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Lingkaran Tengah Dollar -->
+                            <circle cx="50" cy="50" r="15" fill="#8BE653" stroke="#000000" stroke-width="5"/>
+                            <!-- Simbol Dollar ($) -->
+                            <path d="M50 41 V59 M45 44 C45 44 47.5 42 50.5 42 C53.5 42 54.5 44.5 51.5 47.5 C48.5 50.5 45.5 51.5 48.5 54.5 C51.5 57.5 55 56.5 55 56.5" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <small>Input Kas</small>
+                </div>
+            </div>
+            
             <div class="col-4"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekr</small></div></div>
         </div>
 
@@ -264,6 +308,26 @@
             if (id === 'section-ucapan') generateCard();
         }
 
+        function bukaInputKas() {
+            let pin = prompt("Masukkan PIN Petugas Input Kas:");
+            if (pin === PIN_ADMIN) {
+                showSection('section-input-kas');
+            } else if (pin !== null) {
+                alert("PIN Salah!");
+            }
+        }
+
+        function bukaInternal() {
+            let pin = prompt("Masukkan PIN Admin Sekretariat:");
+            if (pin === PIN_ADMIN) {
+                showSection('section-internal');
+                loadDatabaseWarga();
+                loadSuratPenting();
+            } else if (pin !== null) {
+                alert("PIN Salah!");
+            }
+        }
+
         function switchAdminTab(tabId, btnElement) {
             document.querySelectorAll('.admin-sub-content').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -275,58 +339,4 @@
             try {
                 const response = await fetch(url + '&t=' + new Date().getTime());
                 const data = await response.text();
-                return data.split("\n").filter(row => row.trim() !== "").map(row => row.split(/,(?=(?:(?:[^"]"){2})[^"]*$)/));
-            } catch (e) { return []; }
-        }
-
-        function formatRupiah(angka) {
-            return "Rp " + Math.abs(parseInt(angka)).toLocaleString('id-ID');
-        }
-
-        async function cariRiwayat() {
-            let inputRaw = document.getElementById('inputBlok').value;
-            let inputBersih = inputRaw.toUpperCase().trim().replace(/[^A-Z0-9]/g, "");
-            if(!inputBersih) return alert("Ketik nomor blok!");
-
-            const dW = await fetchCSV(urlWarga);
-            let html = ""; let found = false; let header = dW[0]; let namaWarga = "";
-
-            for (let i = 0; i < dW.length; i++) {
-                let cellBlok = (dW[i][0] || "").replace(/[^A-Z0-9]/g, "").toUpperCase();
-                if (cellBlok === inputBersih) {
-                    found = true;
-                    namaWarga = dW[i][1] ? dW[i][1].replace(/"/g,'').trim() : "Warga RT 05";
-                    for(let j = 2; j < dW[i].length; j++) {
-                        let status = dW[i][j] ? dW[i][j].replace(/"/g,'').trim() : "";
-                        if (status !== "") {
-                            let css = status.toLowerCase().includes('lunas') ? 'status-ok' : 'status-wait';
-                            html += <tr><td class="fw-bold">${header[j].replace(/"/g,'')}</td><td><span class="${css}">${status}</span></td></tr>;
-                        }
-                    }
-                    break;
-                }
-            }
-
-            if(found) {
-                let infoRek = `<tr><td colspan="2" class="bg-light p-3 text-center border-top">
-                    <small class="text-muted d-block">Transfer Iuran ke Bendahara:</small>
-                    <b class="text-primary d-block">BCA ${REK_BCA}</b>
-                    <span class="badge bg-secondary">A/n ${AN_REK}</span>
-                </td></tr>`;
-                document.getElementById('tabel-riwayat').innerHTML = <tr><th colspan="2" class="table-dark text-center" style="border-radius:10px 10px 0 0">${namaWarga}</th></tr> + html + infoRek;
-                document.getElementById('hasil-pencarian').style.display = "block";
-            } else { alert("Data Blok tidak ditemukan!"); }
-        }
-
-        async function loadKasDansos() {
-            const dK = await fetchCSV(urlKasDansos);
-            let total = 0; let htmlK = "";
-            dK.slice(1).forEach(r => {
-                if(r[1]) {
-                    let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
-                    total += nominal;
-                    let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
-                    htmlK += <div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0].replace(/"/g,'')}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>;
-                }
-            });
-            document.
+                return data.split("\n").filter(
