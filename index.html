@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cinzel:wght@600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 175px; padding-bottom: 50px; }
+        /* Padding-top dinaikkan ke 230px agar form tidak tertutup header & running text */
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 230px; padding-bottom: 50px; }
         .fixed-top-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1040; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .hero-section { color: white; padding: 15px 0 10px 0; }
         .logo-rt { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 2px solid white; background: white; }
@@ -18,7 +19,6 @@
         .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
         .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
         
-        /* GAYA KARTU MENU (SUDAH DIPERBAIKI TOTAL) */
         .card-menu { 
             border: none; 
             border-radius: 18px; 
@@ -167,23 +167,32 @@
 
         <!-- SECTION: BUAT UCAPAN -->
         <div id="section-ucapan" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN DUKA CITA</h6>
+            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN</h6>
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Pilih Jenis Ucapan</label>
+                    <select id="jenisUcapan" class="form-select form-select-sm fw-bold text-primary" onchange="switchTemaUcapan()">
+                        <option value="duka">🖤 Turut Berduka Cita</option>
+                        <option value="lahiran">👶 Ucapan Kelahiran (Melahirkan)</option>
+                    </select>
+                </div>
+
                 <div class="mb-2">
-                    <label class="form-label small fw-bold">Unggah Foto Almarhum/ah (Opsional)</label>
+                    <label class="form-label small fw-bold" id="labelFoto">Unggah Foto Almarhum/ah (Opsional)</label>
                     <input type="file" id="inputFoto" class="form-control form-control-sm" accept="image/*" onchange="handleImageUpload(event)">
                 </div>
                 <div class="mb-2">
-                    <label class="form-label small fw-bold">Nama Almarhum / Almarhumah</label>
+                    <label class="form-label small fw-bold" id="labelNama">Nama Almarhum / Almarhumah</label>
                     <input type="text" id="namaMeninggal" class="form-control form-control-sm" value="Alm. Ibu Sutimi" oninput="generateCard()">
                 </div>
                 <div class="row g-2 mb-2">
                     <div class="col-6">
-                        <label class="form-label small fw-bold">Orang Tua dari (Bpk)</label>
+                        <label class="form-label small fw-bold" id="labelBpk">Ayah / Orang Tua (Bpk)</label>
                         <input type="text" id="namaBpk" class="form-control form-control-sm" value="Sukardi" oninput="generateCard()">
                     </div>
                     <div class="col-6">
-                        <label class="form-label small fw-bold">Ibu</label>
+                        <label class="form-label small fw-bold" id="labelIbu">Ibu</label>
                         <input type="text" id="namaIbu" class="form-control form-control-sm" value="Aisyah" oninput="generateCard()">
                     </div>
                 </div>
@@ -191,9 +200,11 @@
                     <label class="form-label small fw-bold">Alamat / Blok Rumah</label>
                     <input type="text" id="alamatBlok" class="form-control form-control-sm" value="Blok A2 No. 15" oninput="generateCard()">
                 </div>
+
                 <div class="text-center my-2">
                     <canvas id="cardCanvas" width="1000" height="700" style="width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
                 </div>
+
                 <div class="d-flex gap-2 mt-3">
                     <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="downloadImage()">📥 Download Gambar</button>
                     <button class="btn btn-success btn-sm w-50 fw-bold" onclick="shareWhatsApp()">📲 Share WA</button>
@@ -277,13 +288,17 @@
         const urlSuratPenting = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS93WBkMrAZJRFe6vZ80gBPJdicaUtzeciWkww4N5IwxuHLKX6aZ-FYu_miLkK-7QnE8SxtPsbJ6KZj/pub?output=csv";
 
         let uploadedImage = null;
-        let rtLogoImg = new Image();
-        rtLogoImg.src = 'logo.png';
-        rtLogoImg.onload = function() { generateCard(); };
+        
+        // PANGGILAN BG KANVA (bg_duka.jpg & bg_lahiran.jpg)
+        let bgDukaImg = new Image();
+        bgDukaImg.src = 'bg_duka.jpg';
+        bgDukaImg.onload = function() { generateCard(); };
 
-        // -------------------------------------------------------------
-        // FUNGSI NAVIGASI GLOBAL (DIDAFTARKAN KE WINDOW AGAR SELALU BISA DIKLIK)
-        // -------------------------------------------------------------
+        let bgLahiranImg = new Image();
+        bgLahiranImg.src = 'bg_lahiran.jpg';
+        bgLahiranImg.onload = function() { generateCard(); };
+
+        // NAVIGASI GLOBAL
         window.showSection = function(id) {
             try {
                 document.querySelectorAll('.content-section').forEach(s => {
@@ -295,8 +310,6 @@
                     target.classList.add('active-section');
                     target.style.display = 'block';
                     if (id === 'section-ucapan') generateCard();
-                } else {
-                    console.warn("Target section tidak ditemukan:", id);
                 }
             } catch (e) {
                 console.error("Error pada showSection:", e);
@@ -330,17 +343,13 @@
             btnElement.classList.add('active');
         };
 
-        // -------------------------------------------------------------
-        // FUNGSI FETCH DATA & UTILITAS
-        // -------------------------------------------------------------
         async function fetchCSV(url) {
             try {
                 const response = await fetch(url + '&t=' + new Date().getTime());
-                if (!response.ok) throw new Error("Gagal mengambil data dari server");
+                if (!response.ok) throw new Error("Gagal mengambil data");
                 const data = await response.text();
                 return data.split("\n").filter(row => row.trim() !== "").map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
             } catch (e) { 
-                console.warn("Gagal Fetch CSV:", url, e);
                 return []; 
             }
         }
@@ -489,9 +498,21 @@
             document.getElementById('list-surat-penting').innerHTML = htmlSP || '<p class="text-center text-muted">Belum ada berkas rahasia.</p>';
         }
 
-        // -------------------------------------------------------------
-        // FUNGSI KARTU UCAPAN
-        // -------------------------------------------------------------
+        // AKSI DENGAN CANVA BACKGROUND
+        window.switchTemaUcapan = function() {
+            let jenis = document.getElementById('jenisUcapan').value;
+            if (jenis === 'lahiran') {
+                document.getElementById('labelFoto').innerText = "Unggah Foto Bayi (Opsional)";
+                document.getElementById('labelNama').innerText = "Nama Bayi / Anak";
+                document.getElementById('namaMeninggal').value = "Muhammad Azka";
+            } else {
+                document.getElementById('labelFoto').innerText = "Unggah Foto Almarhum/ah (Opsional)";
+                document.getElementById('labelNama').innerText = "Nama Almarhum / Almarhumah";
+                document.getElementById('namaMeninggal').value = "Alm. Ibu Sutimi";
+            }
+            generateCard();
+        };
+
         window.handleImageUpload = function(e) {
             let reader = new FileReader();
             reader.onload = function(event) {
@@ -506,148 +527,96 @@
             let canvas = document.getElementById('cardCanvas');
             if(!canvas) return;
             let ctx = canvas.getContext('2d');
+            let jenis = document.getElementById('jenisUcapan').value;
             
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Menggunakan bg_duka.jpg atau bg_lahiran.jpg
+            let activeBg = (jenis === 'lahiran') ? bgLahiranImg : bgDukaImg;
 
-            ctx.strokeStyle = "#1b4332";
-            ctx.lineWidth = 12;
-            ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
-            
-            ctx.strokeStyle = "#d4af37";
-            ctx.lineWidth = 4;
-            ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
-
-            ctx.fillStyle = "#1b4332";
-            ctx.fillRect(25, 25, canvas.width - 50, 90);
-
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 28px 'Cinzel', serif";
-            ctx.textAlign = "center";
-            ctx.fillText("TURUT BERDUKA CITA", canvas.width / 2, 78);
-
-            if (rtLogoImg.complete && rtLogoImg.naturalWidth !== 0) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(80, 70, 32, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(rtLogoImg, 48, 38, 64, 64);
-                ctx.restore();
-
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(canvas.width - 80, 70, 32, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.drawImage(rtLogoImg, canvas.width - 112, 38, 64, 64);
-                ctx.restore();
+            // 1. Gambar Background Canva
+            if (activeBg.complete && activeBg.naturalWidth !== 0) {
+                ctx.drawImage(activeBg, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            let startY = 160;
-
+            // 2. Gambar Foto di Bingkai Bulat
             if (uploadedImage) {
                 let centerX = canvas.width / 2;
-                let centerY = startY + 65;
-                let radius = 65;
-
-                ctx.save();
-                let petCount = 12;
-                for (let i = 0; i < petCount; i++) {
-                    let angle = (i * 2 * Math.PI) / petCount;
-                    let petalX = centerX + Math.cos(angle) * (radius + 8);
-                    let petalY = centerY + Math.sin(angle) * (radius + 8);
-                    
-                    ctx.beginPath();
-                    ctx.arc(petalX, petalY, 14, 0, Math.PI * 2);
-                    ctx.fillStyle = (i % 2 === 0) ? "#fefae0" : "#e9edc9";
-                    ctx.fill();
-                    ctx.strokeStyle = "#d4af37";
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-                }
-                ctx.restore();
+                let centerY = 320;
+                let radius = 100;
 
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.clip();
-                ctx.drawImage(uploadedImage, centerX - radius, startY, radius * 2, radius * 2);
+                ctx.drawImage(uploadedImage, centerX - radius, centerY - radius, radius * 2, radius * 2);
                 ctx.restore();
-
-                ctx.strokeStyle = "#d4af37";
-                ctx.lineWidth = 5;
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                ctx.stroke();
-
-                startY += 160;
-            } else {
-                startY += 30;
             }
 
-            ctx.fillStyle = "#2d6a4f";
-            ctx.font = "italic 22px 'Playfair Display', serif";
-            ctx.fillText("Innalillahi wa inna ilaihi raji'un", canvas.width / 2, startY);
-            
-            startY += 40;
-            ctx.fillStyle = "#333333";
-            ctx.font = "20px 'Inter', sans-serif";
-            ctx.fillText("Telah berpulang ke Rahmatullah:", canvas.width / 2, startY);
+            // 3. Teks Nama & Keterangan
+            ctx.textAlign = "center";
+            let startY = 490; 
 
-            startY += 50;
-            ctx.fillStyle = "#1b4332";
+            // Warna Nama (Duka: Hijau Tua, Lahiran: Biru)
+            ctx.fillStyle = (jenis === 'lahiran') ? "#0d6efd" : "#1b4332";
             ctx.font = "bold 34px 'Playfair Display', serif";
-            let nama = document.getElementById('namaMeninggal').value || "Alm. Ibu Sutimi";
+            let nama = document.getElementById('namaMeninggal').value || "Nama";
             ctx.fillText(nama, canvas.width / 2, startY);
 
-            startY += 45;
-            ctx.fillStyle = "#555555";
-            ctx.font = "20px 'Inter', sans-serif";
+            // Teks Orang Tua
+            startY += 40;
+            ctx.fillStyle = "#333333";
+            ctx.font = "600 20px 'Inter', sans-serif";
             let bpk = document.getElementById('namaBpk').value;
             let ibu = document.getElementById('namaIbu').value;
             let orangTuaText = "";
-            if (bpk && ibu) orangTuaText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
-            else if (bpk) orangTuaText = `Orang Tua dari Bpk ${bpk}`;
-            else if (ibu) orangTuaText = `Orang Tua dari Ibu ${ibu}`;
+
+            if (jenis === 'lahiran') {
+                if (bpk && ibu) orangTuaText = `Putra/Putri dari Bpk ${bpk} & Ibu ${ibu}`;
+                else if (bpk) orangTuaText = `Anak dari Bpk ${bpk}`;
+                else if (ibu) orangTuaText = `Anak dari Ibu ${ibu}`;
+            } else {
+                if (bpk && ibu) orangTuaText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
+                else if (bpk) orangTuaText = `Orang Tua dari Bpk ${bpk}`;
+                else if (ibu) orangTuaText = `Orang Tua dari Ibu ${ibu}`;
+            }
+
             if(orangTuaText) ctx.fillText(orangTuaText, canvas.width / 2, startY);
 
+            // Alamat / Blok
             startY += 35;
+            ctx.fillStyle = "#555555";
+            ctx.font = "500 18px 'Inter', sans-serif";
             let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
             ctx.fillText(`(${alamat} - Oleana Park)`, canvas.width / 2, startY);
-
-            startY += 55;
-            ctx.fillStyle = "#444444";
-            ctx.font = "italic 17px 'Inter', sans-serif";
-            ctx.fillText("Semoga almarhum/ah husnul khotimah, diterima segala amal ibadahnya,", canvas.width / 2, startY);
-            ctx.fillText("serta keluarga yang ditinggalkan diberikan ketabahan dan keikhlasan.", canvas.width / 2, startY + 25);
-
-            ctx.fillStyle = "#1b4332";
-            ctx.fillRect(25, canvas.height - 65, canvas.width - 50, 40);
-
-            ctx.fillStyle = "#d4af37";
-            ctx.font = "bold 16px 'Inter', sans-serif";
-            ctx.fillText("KELUARGA BESAR WARGA RT 05 / RW 18 OLEANA PARK", canvas.width / 2, canvas.height - 39);
         };
 
         window.downloadImage = function() {
             let canvas = document.getElementById('cardCanvas');
+            let jenis = document.getElementById('jenisUcapan').value;
             let link = document.createElement('a');
-            link.download = 'Ucapan_Duka_Cita_RT05.png';
+            link.download = (jenis === 'lahiran') ? 'Ucapan_Kelahiran_RT05.png' : 'Ucapan_Duka_Cita_RT05.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         };
 
         window.shareWhatsApp = function() {
+            let jenis = document.getElementById('jenisUcapan').value;
             let nama = document.getElementById('namaMeninggal').value;
-            let teks = `Innalillahi wa inna ilaihi raji'un.\n\nTelah berpulang ke Rahmatullah *${nama}*.\nSemoga Husnul Khotimah.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+            let teks = "";
+
+            if (jenis === 'lahiran') {
+                teks = `Selamat atas kelahiran putra/putri dari keluarga *${nama}*! 👶\nSemoga menjadi anak yang soleh/solehah dan membawa keberkahan.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+            } else {
+                teks = `Innalillahi wa inna ilaihi raji'un.\n\nTelah berpulang ke Rahmatullah *${nama}*.\nSemoga Husnul Khotimah.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+            }
+
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
         };
 
-        // -------------------------------------------------------------
-        // INI SCRIPT DENGAN LISTENER SAFE (JALAN SETELAH DOM SIAP)
-        // -------------------------------------------------------------
         window.addEventListener('DOMContentLoaded', function() {
-            // Jalankan pencarian data awal secara paralel
             loadAgenda();
             loadKasRT();
             loadKasDansos();
@@ -660,7 +629,7 @@
                     let status = document.getElementById('statusInput');
                     
                     if (URL_APPS_SCRIPT.includes("GANTI_DENGAN_ID_SCRIPT_ANDA")) {
-                        status.innerHTML = "<span class='text-danger'>URL Web App Google Script belum diatur dengan benar!</span>";
+                        status.innerHTML = "<span class='text-danger'>URL Web App Google Script belum diatur!</span>";
                         return;
                     }
 
@@ -685,7 +654,7 @@
                         loadKasDansos();
                     })
                     .catch(err => {
-                        status.innerHTML = "<span class='text-danger'>Gagal menyimpan data. Cek koneksi / URL Apps Script.</span>";
+                        status.innerHTML = "<span class='text-danger'>Gagal menyimpan data.</span>";
                     });
                 });
             }
