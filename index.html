@@ -7,7 +7,7 @@
     
     <link rel="icon" type="image/png" href="logo.png?v=7">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cinzel:wght@600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 175px; padding-bottom: 50px; }
@@ -23,6 +23,8 @@
         .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; }
         .card-menu small { font-size: 0.75rem; font-weight: 700; color: #0a58ca; }
         
+        .card-menu-input { border: 2px solid #ffc107; background: #fffdf5; }
+
         .content-section { display: none; margin-top: 15px; animation: fadeIn 0.4s ease-in-out; }
         .active-section { display: block; }
         
@@ -44,10 +46,11 @@
 </head>
 <body>
 
+    <!-- HEADER FIXED -->
     <div class="fixed-top-header">
         <header class="hero-section text-center">
             <div class="container">
-                <img src="logo.png" alt="Logo RT" class="logo-rt" onerror="this.src='https://via.placeholder.com/75'">
+                <img src="logo.png" id="mainAppLogo" alt="Logo RT" class="logo-rt" onerror="this.src='https://via.placeholder.com/75'">
                 <h1 class="fw-bold">MOBILE RT 05</h1>
                 <p class="opacity-75">Oleana Park • RW 18</p>
             </div>
@@ -67,7 +70,8 @@
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-agenda')"><div class="icon-size">📅</div><small>Agenda</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-ucapan')"><div class="icon-size">🖼️</div><small>Buat Ucapan</small></div></div>
             <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
-            <div class="col-4 ms-auto me-auto mt-2"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekretariat</small></div></div>
+            <div class="col-4"><div class="card card-menu card-menu-input" onclick="bukaInputKas()"><div class="icon-size">➕</div><small>Input Kas</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekr</small></div></div>
         </div>
 
         <hr class="my-3">
@@ -126,39 +130,77 @@
             </div>
         </div>
 
-        <!-- SECTION: BUAT UCAPAN / PAPAN PENGUMUMAN -->
+        <!-- SECTION: BUAT UCAPAN DUKA CITA -->
         <div id="section-ucapan" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN RT 05</h6>
+            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN DUKA CITA</h6>
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                
                 <div class="mb-2">
-                    <label class="form-label small fw-bold">Jenis Ucapan</label>
-                    <select id="kategoriUcapan" class="form-select form-select-sm" onchange="generateCard()">
-                        <option value="duka">🖤 Turut Duka Cita (Meninggal Dunia)</option>
-                        <option value="lahir">👶 Selamat atas Kelahiran (Bayi)</option>
-                        <option value="sakit">🏥 Doa Lekas Sembuh (Warga Sakit)</option>
-                    </select>
+                    <label class="form-label small fw-bold">Unggah Foto Almarhum/ah (Opsional)</label>
+                    <input type="file" id="inputFoto" class="form-control form-control-sm" accept="image/*" onchange="handleImageUpload(event)">
                 </div>
+
                 <div class="mb-2">
-                    <label class="form-label small fw-bold">Nama Warga / Almarhum / Bayi</label>
-                    <input type="text" id="namaWarga" class="form-control form-control-sm" value="Bapak Fulan Bin Fulan" oninput="generateCard()">
+                    <label class="form-label small fw-bold">Nama Almarhum / Almarhumah</label>
+                    <input type="text" id="namaMeninggal" class="form-control form-control-sm" value="Alm. Ibu Sutimi" oninput="generateCard()">
                 </div>
-                <div class="mb-2">
-                    <label class="form-label small fw-bold">Detail / Blok Rumah</label>
-                    <input type="text" id="blokRumah" class="form-control form-control-sm" value="Warga Blok A7 No. 12" oninput="generateCard()">
+
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Orang Tua dari (Bpk)</label>
+                        <input type="text" id="namaBpk" class="form-control form-control-sm" value="Sukardi" oninput="generateCard()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold">Ibu</label>
+                        <input type="text" id="namaIbu" class="form-control form-control-sm" value="Aisyah" oninput="generateCard()">
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label small fw-bold">Pesan / Doa Tambahan</label>
-                    <input type="text" id="pesanDoa" class="form-control form-control-sm" value="Semoga husnul khotimah & keluarga diberikan ketabahan." oninput="generateCard()">
+                    <label class="form-label small fw-bold">Alamat / Blok Rumah</label>
+                    <input type="text" id="alamatBlok" class="form-control form-control-sm" value="Blok A2 No. 15" oninput="generateCard()">
                 </div>
 
                 <div class="text-center my-2">
-                    <canvas id="cardCanvas" width="600" height="800" style="width: 100%; max-width: 320px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
+                    <canvas id="cardCanvas" width="1000" height="700" style="width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
                 </div>
 
                 <div class="d-flex gap-2 mt-3">
                     <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="downloadImage()">📥 Download Gambar</button>
                     <button class="btn btn-success btn-sm w-50 fw-bold" onclick="shareWhatsApp()">📲 Share WA</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- SECTION: INPUT KAS -->
+        <div id="section-input-kas" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">➕ INPUT TRANSAKSI KAS</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <form id="formKeuangan">
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Tanggal</label>
+                        <input type="date" id="inputTanggal" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Jenis Kas / Transaksi</label>
+                        <select id="inputJenis" class="form-select form-select-sm" required>
+                            <option value="Pemasukan Kas RT">Pemasukan Kas RT</option>
+                            <option value="Pengeluaran Kas RT">Pengeluaran Kas RT</option>
+                            <option value="Pemasukan Kas Dansos">Pemasukan Kas Dansos</option>
+                            <option value="Pengeluaran Kas Dansos">Pengeluaran Kas Dansos</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Keterangan / Keperluan</label>
+                        <input type="text" id="inputKeterangan" class="form-control form-control-sm" placeholder="Contoh: Iuran Bpk Ahmad / Beli Lampu" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nominal (Rp)</label>
+                        <input type="number" id="inputNominal" class="form-control form-control-sm" placeholder="Contoh: 50000" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-sm fw-bold">Simpan ke Google Sheets</button>
+                </form>
+                <p id="statusInput" class="text-center small mt-2 fw-bold"></p>
             </div>
         </div>
 
@@ -173,7 +215,6 @@
             
             <div class="d-flex justify-content-center gap-2 mb-3">
                 <button class="btn btn-outline-primary sub-tab-btn active" onclick="switchAdminTab('tab-db-warga', this)">👥 Data Warga</button>
-                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-input-kas', this)">➕ Input Transaksi</button>
                 <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat Penting</button>
             </div>
 
@@ -187,39 +228,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: INPUT TRANSAKSI KAS & DANSOS -->
-            <div id="tab-input-kas" class="admin-sub-content" style="display:none;">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                    <h6 class="fw-bold text-primary mb-3 text-center">➕ Form Input Transaksi Kas</h6>
-                    <form id="formKeuangan">
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">Tanggal</label>
-                            <input type="date" id="inputTanggal" class="form-control form-control-sm" required>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">Jenis Kas / Transaksi</label>
-                            <select id="inputJenis" class="form-select form-select-sm" required>
-                                <option value="Pemasukan Kas RT">Pemasukan Kas RT</option>
-                                <option value="Pengeluaran Kas RT">Pengeluaran Kas RT</option>
-                                <option value="Pemasukan Kas Dansos">Pemasukan Kas Dansos</option>
-                                <option value="Pengeluaran Kas Dansos">Pengeluaran Kas Dansos</option>
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label small fw-bold">Keterangan / Keperluan</label>
-                            <input type="text" id="inputKeterangan" class="form-control form-control-sm" placeholder="Contoh: Iuran Bpk Ahmad / Beli Lampu" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Nominal (Rp)</label>
-                            <input type="number" id="inputNominal" class="form-control form-control-sm" placeholder="Contoh: 50000" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 btn-sm fw-bold">Simpan ke Google Sheets</button>
-                    </form>
-                    <p id="statusInput" class="text-center small mt-2 fw-bold"></p>
-                </div>
-            </div>
-
-            <!-- TAB 3: SURAT-SURAT PENTING -->
+            <!-- TAB 2: SURAT-SURAT PENTING -->
             <div id="tab-surat-penting" class="admin-sub-content" style="display:none;">
                 <div id="list-surat-penting" class="table-responsive p-3">
                     <p class="text-center text-muted">Memuat berkas rahasia & surat penting...</p>
@@ -234,10 +243,8 @@
         const REK_BCA = "5955097731";
         const AN_REK = "Sumantri";
 
-        // URL Google Apps Script Anda (Ganti dengan URL Deployment Web App Anda)
         const URL_APPS_SCRIPT = "MASUKKAN_WEB_APP_URL_GOOGLE_SCRIPT_ANDA_DI_SINI";
 
-        // LINK SPREADSHEET
         const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
         const urlKas = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9IzJn8M1Emu0_LC4TY_cQik462FybKxEKgB9RaleHVqtOSXV17l1q_DTg2WG_a3DM2VYEzNEaKCI6/pub?gid=0&single=true&output=csv";
         const urlSurat = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIWCVJPnol6BmfzfrmVo3Dx7ucnA1j9iuQBQmzjTVFsRr-GiJ7injvHvlvHkbq_aykB-G6GA8JVnir/pub?output=csv";
@@ -245,6 +252,11 @@
         const urlDatabaseWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ08pVNKL0IHTm8U7Ar79dJwFdqxh8kCZnVjhTzzeew7a4DdIKHLggTdWVGAnpXsX4VdGUz7LNj2cL/pub?gid=0&single=true&output=csv";
         const urlKasDansos = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Z423Kht4DVS_4buGSK9WzCfUrHcBoxmGXAhIPI8Y4Z0ZCrY5aAGCUPa7CpPGSs7odrkxtcudiHRI/pub?output=csv"; 
         const urlSuratPenting = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS93WBkMrAZJRFe6vZ80gBPJdicaUtzeciWkww4N5IwxuHLKX6aZ-FYu_miLkK-7QnE8SxtPsbJ6KZj/pub?output=csv";
+
+        let uploadedImage = null;
+        let rtLogoImg = new Image();
+        rtLogoImg.src = 'logo.png';
+        rtLogoImg.onload = function() { generateCard(); };
 
         function showSection(id) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active-section'));
@@ -317,277 +329,4 @@
                     htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0].replace(/"/g,'')}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
                 }
             });
-            document.getElementById('total-saldo-dansos').innerText = formatRupiah(total);
-            document.getElementById('list-kas-dansos').innerHTML = htmlK || "<p class='text-center text-muted'>Data Dansos kosong.</p>";
-        }
-
-        async function loadSuratPenting() {
-            const dSP = await fetchCSV(urlSuratPenting);
-            let groupedSuratPenting = {};
-            
-            dSP.slice(1).forEach(r => {
-                if(r[0]) {
-                    let namaDokumen = r[0].replace(/"/g,'').trim();
-                    let kategori = r[1] ? r[1].replace(/"/g,'').trim() : 'Dokumen Rahasia';
-                    let link = r[2] ? r[2].replace(/"/g,'').trim() : '#';
-                    
-                    if(!groupedSuratPenting[kategori]) {
-                        groupedSuratPenting[kategori] = [];
-                    }
-                    groupedSuratPenting[kategori].push({ nama: namaDokumen, link: link });
-                }
-            });
-
-            let htmlSP = "";
-            for (let kat in groupedSuratPenting) {
-                htmlSP += `<div class="surat-category-title">${kat}</div>`;
-                groupedSuratPenting[kat].forEach(doc => {
-                    htmlSP += `<div class="surat-item">
-                        <span class="small fw-semibold text-dark">${doc.nama}</span>
-                        <a href="${doc.link}" target="_blank" class="btn btn-sm btn-success px-3 shadow-sm" style="font-size:12px;">Unduh / Buka</a>
-                    </div>`;
-                });
-            }
-            document.getElementById('list-surat-penting').innerHTML = htmlSP || "<p class='text-center text-muted'>Belum ada surat penting.</p>";
-        }
-
-        async function initApp() {
-            const [dK, dS, dA] = await Promise.all([fetchCSV(urlKas), fetchCSV(urlSurat), fetchCSV(urlAgenda)]);
-            
-            // Render Kas RT
-            let total = 0; let htmlK = "";
-            dK.slice(1).forEach(r => {
-                if(r[1]) {
-                    let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
-                    total += nominal;
-                    let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
-                    htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0].replace(/"/g,'')}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
-                }
-            });
-            let infoTransfer = `<div class="alert alert-primary py-2 mb-3 text-center" style="font-size:0.8rem"><b>Transfer Iuran:</b> BCA ${REK_BCA} (A/n ${AN_REK})</div>`;
-            document.getElementById('total-saldo').innerText = formatRupiah(total);
-            document.getElementById('list-kas').innerHTML = infoTransfer + (htmlK || "Data kosong.");
-
-            // Load Data Kas Dansos
-            loadKasDansos();
-
-            // Render Agenda
-            let htmlA = ""; 
-            if (dA.length > 1) {
-                for (let i = 1; i < dA.length; i++) {
-                    let k = dA[i];
-                    if (k[0]) {
-                        htmlA += `<div class="card border-0 shadow-sm rounded-4 p-3 mb-2"><b>${k[0].replace(/"/g,'')}</b><small class="text-muted d-block mt-1">🗓️ ${k[1] || '-'} | 📍 ${k[2] || '-'}</small></div>`;
-                    }
-                }
-            }
-            document.getElementById('list-agenda').innerHTML = htmlA || "Belum ada agenda.";
-
-            // Render Surat Public
-            let groupedSurat = {};
-            dS.slice(1).forEach(r => {
-                if(r[0]) {
-                    let namaDokumen = r[0].replace(/"/g,'').trim();
-                    let kategori = r[1] ? r[1].replace(/"/g,'').trim() : 'Lain-lain';
-                    let link = r[2] ? r[2].replace(/"/g,'').trim() : '#';
-                    
-                    if(!groupedSurat[kategori]) {
-                        groupedSurat[kategori] = [];
-                    }
-                    groupedSurat[kategori].push({ nama: namaDokumen, link: link });
-                }
-            });
-
-            let htmlS = "";
-            for (let kat in groupedSurat) {
-                htmlS += `<div class="surat-category-title">${kat}</div>`;
-                groupedSurat[kat].forEach(doc => {
-                    htmlS += `<div class="surat-item">
-                        <span class="small fw-semibold text-dark">${doc.nama}</span>
-                        <a href="${doc.link}" target="_blank" class="btn btn-sm btn-primary px-3 shadow-sm" style="font-size:12px;">Buka</a>
-                    </div>`;
-                });
-            }
-            document.getElementById('list-surat').innerHTML = htmlS || "<p class='text-center text-muted'>Belum ada surat.</p>";
-            
-            // Set Tanggal Default Form
-            document.getElementById('inputTanggal').valueAsDate = new Date();
-        }
-
-        function bukaInternal() {
-            if(prompt("PIN Admin Sekretariat:") === PIN_ADMIN) { 
-                showSection('section-internal'); 
-                loadDatabaseWarga(); 
-                loadSuratPenting();
-            }
-        }
-
-        async function loadDatabaseWarga() {
-            const data = await fetchCSV(urlDatabaseWarga);
-            if(data.length === 0) return;
-            let h = ""; data[0].forEach(c => h += `<th>${c.replace(/"/g,'')}</th>`);
-            document.getElementById('header-db').innerHTML = h;
-            let b = ""; for(let i=1; i<data.length; i++) {
-                b += "<tr>"; data[i].forEach(c => b += `<td>${c.replace(/"/g,'')}</td>`); b += "</tr>";
-            }
-            document.getElementById('body-db').innerHTML = b;
-        }
-
-        // FUNGSI INPUT TRANSAKSI KE GOOGLE SHEETS
-        document.getElementById('formKeuangan').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const statusText = document.getElementById('statusInput');
-            statusText.innerText = "⏳ Menyimpan data...";
-            statusText.style.color = "#0d6efd";
-
-            const payload = {
-                tanggal: document.getElementById('inputTanggal').value,
-                jenis: document.getElementById('inputJenis').value,
-                keterangan: document.getElementById('inputKeterangan').value,
-                nominal: document.getElementById('inputNominal').value
-            };
-
-            fetch(URL_APPS_SCRIPT, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                statusText.innerText = "✅ Berhasil disimpan ke Google Sheets!";
-                statusText.style.color = "#198754";
-                document.getElementById('formKeuangan').reset();
-                document.getElementById('inputTanggal').valueAsDate = new Date();
-            })
-            .catch(() => {
-                statusText.innerText = "✅ Transaksi terkirim!";
-                statusText.style.color = "#198754";
-                document.getElementById('formKeuangan').reset();
-                document.getElementById('inputTanggal').valueAsDate = new Date();
-            });
-        });
-
-        // FUNGSI GENERATOR KARTU UCAPAN (CANVAS)
-        function generateCard() {
-            const canvas = document.getElementById('cardCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            const kategori = document.getElementById('kategoriUcapan').value;
-            const nama = document.getElementById('namaWarga').value;
-            const blok = document.getElementById('blokRumah').value;
-            const doa = document.getElementById('pesanDoa').value;
-
-            if (kategori === 'duka') {
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.strokeStyle = '#94a3b8';
-                ctx.lineWidth = 10;
-                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-
-                ctx.fillStyle = '#f8fafc';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText("TURUT DUKA CITA", canvas.width / 2, 100);
-
-                ctx.fillStyle = '#cbd5e1';
-                ctx.font = 'italic 22px serif';
-                ctx.fillText("إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ", canvas.width / 2, 160);
-                ctx.font = '18px sans-serif';
-                ctx.fillText("Telah Berpulang ke Rahmatullah", canvas.width / 2, 220);
-
-                ctx.fillStyle = '#facc15';
-                ctx.font = 'bold 34px sans-serif';
-                ctx.fillText(nama, canvas.width / 2, 320);
-
-                ctx.fillStyle = '#f8fafc';
-                ctx.font = 'bold 22px sans-serif';
-                ctx.fillText(blok, canvas.width / 2, 380);
-
-                ctx.fillStyle = '#e2e8f0';
-                ctx.font = 'italic 18px sans-serif';
-                ctx.fillText('"' + doa + '"', canvas.width / 2, 480);
-
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = 'bold 20px sans-serif';
-                ctx.fillText("Keluarga Besar RT 05 Oleana Park", canvas.width / 2, 720);
-
-            } else if (kategori === 'lahir') {
-                ctx.fillStyle = '#f0fdf4';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.strokeStyle = '#22c55e';
-                ctx.lineWidth = 10;
-                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-
-                ctx.fillStyle = '#15803d';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText("SELAMAT ATAS KELAHIRAN", canvas.width / 2, 100);
-
-                ctx.fillStyle = '#16a34a';
-                ctx.font = 'bold 34px sans-serif';
-                ctx.fillText(nama, canvas.width / 2, 300);
-
-                ctx.fillStyle = '#1f2937';
-                ctx.font = 'bold 22px sans-serif';
-                ctx.fillText(blok, canvas.width / 2, 360);
-
-                ctx.fillStyle = '#374151';
-                ctx.font = 'italic 18px sans-serif';
-                ctx.fillText('"' + doa + '"', canvas.width / 2, 460);
-
-                ctx.fillStyle = '#15803d';
-                ctx.font = 'bold 20px sans-serif';
-                ctx.fillText("Keluarga Besar RT 05 Oleana Park", canvas.width / 2, 720);
-
-            } else if (kategori === 'sakit') {
-                ctx.fillStyle = '#eff6ff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 10;
-                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
-
-                ctx.fillStyle = '#1d4ed8';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText("DOA LEKAS SEMBUH", canvas.width / 2, 100);
-
-                ctx.fillStyle = '#2563eb';
-                ctx.font = 'bold 34px sans-serif';
-                ctx.fillText(nama, canvas.width / 2, 300);
-
-                ctx.fillStyle = '#1f2937';
-                ctx.font = 'bold 22px sans-serif';
-                ctx.fillText(blok, canvas.width / 2, 360);
-
-                ctx.fillStyle = '#374151';
-                ctx.font = 'italic 18px sans-serif';
-                ctx.fillText('"' + doa + '"', canvas.width / 2, 460);
-
-                ctx.fillStyle = '#1d4ed8';
-                ctx.font = 'bold 20px sans-serif';
-                ctx.fillText("Keluarga Besar RT 05 Oleana Park", canvas.width / 2, 720);
-            }
-        }
-
-        function downloadImage() {
-            const canvas = document.getElementById('cardCanvas');
-            const link = document.createElement('a');
-            link.download = 'Ucapan_RT05.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-
-        function shareWhatsApp() {
-            const nama = document.getElementById('namaWarga').value;
-            const blok = document.getElementById('blokRumah').value;
-            const doa = document.getElementById('pesanDoa').value;
-            const text = `*PENGUMUMAN RT 05 OLEANA PARK*\n\nInformasi mengenai: *${nama}* (${blok}).\n\n"${doa}"\n\n_Salam hangat,_\n*Pengurus RT 05 Oleana Park*`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        // Jalankan aplikasi saat halaman selesai dimuat
-        document.addEventListener("DOMContentLoaded", initApp);
-    </script>
-</body>
-</html>
+            document.
