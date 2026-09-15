@@ -18,7 +18,7 @@
         .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
         .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
         
-        /* GAYA KARTU MENU (SUDAH DIPERBAIKI AGAR BISA DIKLIK) */
+        /* GAYA KARTU MENU (SUDAH DIPERBAIKI TOTAL) */
         .card-menu { 
             border: none; 
             border-radius: 18px; 
@@ -34,11 +34,12 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             position: relative;
-            z-index: 1050;
+            z-index: 10;
             pointer-events: auto !important;
+            touch-action: manipulation;
         }
         .card-menu:active { transform: scale(0.92); background-color: #f8f9fa; }
-        .card-menu * { pointer-events: none; }
+        .card-menu * { pointer-events: none !important; }
         
         .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
         .card-menu small { font-size: 0.75rem; font-weight: 700; color: #0a58ca; }
@@ -46,7 +47,7 @@
         .card-menu-input { border: 2px solid #ffc107; background: #fffdf5; }
 
         .content-section { display: none; margin-top: 15px; animation: fadeIn 0.4s ease-in-out; }
-        .active-section { display: block; }
+        .active-section { display: block !important; }
         
         .table-responsive { background: white; border-radius: 15px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .status-ok { background-color: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
@@ -265,7 +266,6 @@
         const REK_BCA = "5955097731";
         const AN_REK = "Sumantri";
 
-        // SILAKAN GANTI ISI VARIABEL DI BAWAH JIKA SUDAH ADA URL GOOGLE APPS SCRIPT WEB APP
         const URL_APPS_SCRIPT = "https://script.google.com/macros/s/GANTI_DENGAN_ID_SCRIPT_ANDA/exec";
 
         const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
@@ -281,46 +281,58 @@
         rtLogoImg.src = 'logo.png';
         rtLogoImg.onload = function() { generateCard(); };
 
-        function showSection(id) {
+        // -------------------------------------------------------------
+        // FUNGSI NAVIGASI GLOBAL (DIDAFTARKAN KE WINDOW AGAR SELALU BISA DIKLIK)
+        // -------------------------------------------------------------
+        window.showSection = function(id) {
             try {
-                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active-section'));
+                document.querySelectorAll('.content-section').forEach(s => {
+                    s.classList.remove('active-section');
+                    s.style.display = 'none';
+                });
                 let target = document.getElementById(id);
                 if (target) {
                     target.classList.add('active-section');
+                    target.style.display = 'block';
                     if (id === 'section-ucapan') generateCard();
+                } else {
+                    console.warn("Target section tidak ditemukan:", id);
                 }
             } catch (e) {
                 console.error("Error pada showSection:", e);
             }
-        }
+        };
 
-        function bukaInputKas() {
+        window.bukaInputKas = function() {
             let pin = prompt("Masukkan PIN Petugas Input Kas:");
             if (pin === PIN_ADMIN) {
-                showSection('section-input-kas');
+                window.showSection('section-input-kas');
             } else if (pin !== null) {
                 alert("PIN Salah!");
             }
-        }
+        };
 
-        function bukaInternal() {
+        window.bukaInternal = function() {
             let pin = prompt("Masukkan PIN Admin Sekretariat:");
             if (pin === PIN_ADMIN) {
-                showSection('section-internal');
+                window.showSection('section-internal');
                 loadDatabaseWarga();
                 loadSuratPenting();
             } else if (pin !== null) {
                 alert("PIN Salah!");
             }
-        }
+        };
 
-        function switchAdminTab(tabId, btnElement) {
+        window.switchAdminTab = function(tabId, btnElement) {
             document.querySelectorAll('.admin-sub-content').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).style.display = 'block';
             btnElement.classList.add('active');
-        }
+        };
 
+        // -------------------------------------------------------------
+        // FUNGSI FETCH DATA & UTILITAS
+        // -------------------------------------------------------------
         async function fetchCSV(url) {
             try {
                 const response = await fetch(url + '&t=' + new Date().getTime());
@@ -337,5 +349,347 @@
             return "Rp " + Math.abs(parseInt(angka) || 0).toLocaleString('id-ID');
         }
 
-        async function cariRiwayat() {
-            let inpu
+        window.cariRiwayat = async function() {
+            let inputRaw = document.getElementById('inputBlok').value;
+            let inputBersih = inputRaw.toUpperCase().trim().replace(/[^A-Z0-9]/g, "");
+            if(!inputBersih) return alert("Ketik nomor blok!");
+
+            const dW = await fetchCSV(urlWarga);
+            if(dW.length === 0) return alert("Gagal memuat data warga dari koneksi internet.");
+
+            let html = ""; let found = false; let header = dW[0]; let namaWarga = "";
+
+            for (let i = 0; i < dW.length; i++) {
+                let cellBlok = (dW[i][0] || "").replace(/[^A-Z0-9]/g, "").toUpperCase();
+                if (cellBlok === inputBersih) {
+                    found = true;
+                    namaWarga = dW[i][1] ? dW[i][1].replace(/"/g,'').trim() : "Warga RT 05";
+                    for(let j = 2; j < dW[i].length; j++) {
+                        let status = dW[i][j] ? dW[i][j].replace(/"/g,'').trim() : "";
+                        if (status !== "") {
+                            let css = status.toLowerCase().includes('lunas') ? 'status-ok' : 'status-wait';
+                            html += `<tr><td class="fw-bold">${header[j] ? header[j].replace(/"/g,'') : ''}</td><td><span class="${css}">${status}</span></td></tr>`;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if(found) {
+                let infoRek = `<tr><td colspan="2" class="bg-light p-3 text-center border-top">
+                    <small class="text-muted d-block">Transfer Iuran ke Bendahara:</small>
+                    <b class="text-primary d-block">BCA ${REK_BCA}</b>
+                    <span class="badge bg-secondary">A/n ${AN_REK}</span>
+                </td></tr>`;
+                document.getElementById('tabel-riwayat').innerHTML = `<tr><th colspan="2" class="table-dark text-center" style="border-radius:10px 10px 0 0">${namaWarga}</th></tr>` + html + infoRek;
+                document.getElementById('hasil-pencarian').style.display = "block";
+            } else { alert("Data Blok tidak ditemukan!"); }
+        };
+
+        async function loadKasDansos() {
+            try {
+                const dK = await fetchCSV(urlKasDansos);
+                let total = 0; let htmlK = "";
+                if(dK.length > 1) {
+                    dK.slice(1).forEach(r => {
+                        if(r[1]) {
+                            let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
+                            total += nominal;
+                            let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
+                            htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0] ? r[0].replace(/"/g,'') : ''}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
+                        }
+                    });
+                }
+                document.getElementById('total-saldo-dansos').innerText = formatRupiah(total);
+                document.getElementById('list-kas-dansos').innerHTML = htmlK || '<p class="text-center text-muted">Belum ada transaksi.</p>';
+            } catch(err) {
+                document.getElementById('list-kas-dansos').innerHTML = '<p class="text-center text-danger">Gagal memuat kas dansos.</p>';
+            }
+        }
+
+        async function loadKasRT() {
+            try {
+                const dK = await fetchCSV(urlKas);
+                let total = 0; let htmlK = "";
+                if(dK.length > 1) {
+                    dK.slice(1).forEach(r => {
+                        if(r[1]) {
+                            let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
+                            total += nominal;
+                            let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
+                            htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0] ? r[0].replace(/"/g,'') : ''}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
+                        }
+                    });
+                }
+                document.getElementById('total-saldo').innerText = formatRupiah(total);
+                document.getElementById('list-kas').innerHTML = htmlK || '<p class="text-center text-muted">Belum ada transaksi.</p>';
+            } catch(err) {
+                document.getElementById('list-kas').innerHTML = '<p class="text-center text-danger">Gagal memuat kas RT.</p>';
+            }
+        }
+
+        async function loadAgenda() {
+            try {
+                const dA = await fetchCSV(urlAgenda);
+                let htmlA = "";
+                if(dA.length > 1) {
+                    dA.slice(1).forEach(r => {
+                        if(r[0]) {
+                            htmlA += `<div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-white"><div class="d-flex justify-content-between align-items-center"><span class="badge bg-primary">${r[0]}</span><small class="text-muted">${r[1]||''}</small></div><h6 class="fw-bold mt-2 mb-1">${r[2]||''}</h6><small class="text-secondary">${r[3]||''}</small></div>`;
+                        }
+                    });
+                }
+                document.getElementById('list-agenda').innerHTML = htmlA || '<p class="text-center text-muted">Belum ada agenda.</p>';
+            } catch(err) {
+                document.getElementById('list-agenda').innerHTML = '<p class="text-center text-danger">Gagal memuat agenda.</p>';
+            }
+        }
+
+        async function loadSurat() {
+            try {
+                const dS = await fetchCSV(urlSurat);
+                let htmlS = "";
+                if(dS.length > 1) {
+                    dS.slice(1).forEach(r => {
+                        if(r[0]) {
+                            htmlS += `<div class="surat-item"><div><b>${r[0]}</b><small class="text-muted d-block">${r[1]||''}</small></div><a href="${r[2]}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">Unduh</a></div>`;
+                        }
+                    });
+                }
+                document.getElementById('list-surat').innerHTML = htmlS || '<p class="text-center text-muted">Belum ada surat.</p>';
+            } catch(err) {
+                document.getElementById('list-surat').innerHTML = '<p class="text-center text-danger">Gagal memuat surat.</p>';
+            }
+        }
+
+        async function loadDatabaseWarga() {
+            const dB = await fetchCSV(urlDatabaseWarga);
+            if(dB.length === 0) return;
+            let headerHtml = ""; dB[0].forEach(h => headerHtml += `<th>${h.replace(/"/g,'')}</th>`);
+            let bodyHtml = "";
+            dB.slice(1).forEach(r => {
+                bodyHtml += "<tr>";
+                r.forEach(c => bodyHtml += `<td>${c.replace(/"/g,'')}</td>`);
+                bodyHtml += "</tr>";
+            });
+            document.getElementById('header-db').innerHTML = headerHtml;
+            document.getElementById('body-db').innerHTML = bodyHtml;
+        }
+
+        async function loadSuratPenting() {
+            const dSP = await fetchCSV(urlSuratPenting);
+            let htmlSP = "";
+            if(dSP.length > 1) {
+                dSP.slice(1).forEach(r => {
+                    if(r[0]) {
+                        htmlSP += `<div class="surat-item"><div><b>${r[0]}</b><small class="text-muted d-block">${r[1]||''}</small></div><a href="${r[2]}" target="_blank" class="btn btn-sm btn-outline-danger fw-bold">Akses</a></div>`;
+                    }
+                });
+            }
+            document.getElementById('list-surat-penting').innerHTML = htmlSP || '<p class="text-center text-muted">Belum ada berkas rahasia.</p>';
+        }
+
+        // -------------------------------------------------------------
+        // FUNGSI KARTU UCAPAN
+        // -------------------------------------------------------------
+        window.handleImageUpload = function(e) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImage = new Image();
+                uploadedImage.onload = function() { generateCard(); };
+                uploadedImage.src = event.target.result;
+            }
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        };
+
+        window.generateCard = function() {
+            let canvas = document.getElementById('cardCanvas');
+            if(!canvas) return;
+            let ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "#1b4332";
+            ctx.lineWidth = 12;
+            ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+            
+            ctx.strokeStyle = "#d4af37";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(25, 25, canvas.width - 50, canvas.height - 50);
+
+            ctx.fillStyle = "#1b4332";
+            ctx.fillRect(25, 25, canvas.width - 50, 90);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 28px 'Cinzel', serif";
+            ctx.textAlign = "center";
+            ctx.fillText("TURUT BERDUKA CITA", canvas.width / 2, 78);
+
+            if (rtLogoImg.complete && rtLogoImg.naturalWidth !== 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(80, 70, 32, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(rtLogoImg, 48, 38, 64, 64);
+                ctx.restore();
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(canvas.width - 80, 70, 32, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(rtLogoImg, canvas.width - 112, 38, 64, 64);
+                ctx.restore();
+            }
+
+            let startY = 160;
+
+            if (uploadedImage) {
+                let centerX = canvas.width / 2;
+                let centerY = startY + 65;
+                let radius = 65;
+
+                ctx.save();
+                let petCount = 12;
+                for (let i = 0; i < petCount; i++) {
+                    let angle = (i * 2 * Math.PI) / petCount;
+                    let petalX = centerX + Math.cos(angle) * (radius + 8);
+                    let petalY = centerY + Math.sin(angle) * (radius + 8);
+                    
+                    ctx.beginPath();
+                    ctx.arc(petalX, petalY, 14, 0, Math.PI * 2);
+                    ctx.fillStyle = (i % 2 === 0) ? "#fefae0" : "#e9edc9";
+                    ctx.fill();
+                    ctx.strokeStyle = "#d4af37";
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(uploadedImage, centerX - radius, startY, radius * 2, radius * 2);
+                ctx.restore();
+
+                ctx.strokeStyle = "#d4af37";
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                startY += 160;
+            } else {
+                startY += 30;
+            }
+
+            ctx.fillStyle = "#2d6a4f";
+            ctx.font = "italic 22px 'Playfair Display', serif";
+            ctx.fillText("Innalillahi wa inna ilaihi raji'un", canvas.width / 2, startY);
+            
+            startY += 40;
+            ctx.fillStyle = "#333333";
+            ctx.font = "20px 'Inter', sans-serif";
+            ctx.fillText("Telah berpulang ke Rahmatullah:", canvas.width / 2, startY);
+
+            startY += 50;
+            ctx.fillStyle = "#1b4332";
+            ctx.font = "bold 34px 'Playfair Display', serif";
+            let nama = document.getElementById('namaMeninggal').value || "Alm. Ibu Sutimi";
+            ctx.fillText(nama, canvas.width / 2, startY);
+
+            startY += 45;
+            ctx.fillStyle = "#555555";
+            ctx.font = "20px 'Inter', sans-serif";
+            let bpk = document.getElementById('namaBpk').value;
+            let ibu = document.getElementById('namaIbu').value;
+            let orangTuaText = "";
+            if (bpk && ibu) orangTuaText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
+            else if (bpk) orangTuaText = `Orang Tua dari Bpk ${bpk}`;
+            else if (ibu) orangTuaText = `Orang Tua dari Ibu ${ibu}`;
+            if(orangTuaText) ctx.fillText(orangTuaText, canvas.width / 2, startY);
+
+            startY += 35;
+            let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
+            ctx.fillText(`(${alamat} - Oleana Park)`, canvas.width / 2, startY);
+
+            startY += 55;
+            ctx.fillStyle = "#444444";
+            ctx.font = "italic 17px 'Inter', sans-serif";
+            ctx.fillText("Semoga almarhum/ah husnul khotimah, diterima segala amal ibadahnya,", canvas.width / 2, startY);
+            ctx.fillText("serta keluarga yang ditinggalkan diberikan ketabahan dan keikhlasan.", canvas.width / 2, startY + 25);
+
+            ctx.fillStyle = "#1b4332";
+            ctx.fillRect(25, canvas.height - 65, canvas.width - 50, 40);
+
+            ctx.fillStyle = "#d4af37";
+            ctx.font = "bold 16px 'Inter', sans-serif";
+            ctx.fillText("KELUARGA BESAR WARGA RT 05 / RW 18 OLEANA PARK", canvas.width / 2, canvas.height - 39);
+        };
+
+        window.downloadImage = function() {
+            let canvas = document.getElementById('cardCanvas');
+            let link = document.createElement('a');
+            link.download = 'Ucapan_Duka_Cita_RT05.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        };
+
+        window.shareWhatsApp = function() {
+            let nama = document.getElementById('namaMeninggal').value;
+            let teks = `Innalillahi wa inna ilaihi raji'un.\n\nTelah berpulang ke Rahmatullah *${nama}*.\nSemoga Husnul Khotimah.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
+        };
+
+        // -------------------------------------------------------------
+        // INI SCRIPT DENGAN LISTENER SAFE (JALAN SETELAH DOM SIAP)
+        // -------------------------------------------------------------
+        window.addEventListener('DOMContentLoaded', function() {
+            // Jalankan pencarian data awal secara paralel
+            loadAgenda();
+            loadKasRT();
+            loadKasDansos();
+            loadSurat();
+
+            const formKeuangan = document.getElementById('formKeuangan');
+            if (formKeuangan) {
+                formKeuangan.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    let status = document.getElementById('statusInput');
+                    
+                    if (URL_APPS_SCRIPT.includes("GANTI_DENGAN_ID_SCRIPT_ANDA")) {
+                        status.innerHTML = "<span class='text-danger'>URL Web App Google Script belum diatur dengan benar!</span>";
+                        return;
+                    }
+
+                    status.innerHTML = "<span class='text-warning'>Mengirim data...</span>";
+
+                    let payload = {
+                        tanggal: document.getElementById('inputTanggal').value,
+                        jenis: document.getElementById('inputJenis').value,
+                        keterangan: document.getElementById('inputKeterangan').value,
+                        nominal: document.getElementById('inputNominal').value
+                    };
+
+                    fetch(URL_APPS_SCRIPT, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+                        status.innerHTML = "<span class='text-success'>Data berhasil disimpan!</span>";
+                        document.getElementById('formKeuangan').reset();
+                        loadKasRT();
+                        loadKasDansos();
+                    })
+                    .catch(err => {
+                        status.innerHTML = "<span class='text-danger'>Gagal menyimpan data. Cek koneksi / URL Apps Script.</span>";
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
