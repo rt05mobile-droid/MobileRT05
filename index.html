@@ -497,7 +497,7 @@
             document.getElementById('list-surat-penting').innerHTML = htmlSP || '<p class="text-center text-muted">Belum ada berkas rahasia.</p>';
         }
 
-        // AKSI DENGAN CANVA BACKGROUND
+        // SWITCH TEMA UCAPAN
         window.switchTemaUcapan = function() {
             let jenis = document.getElementById('jenisUcapan').value;
             if (jenis === 'lahiran') {
@@ -539,31 +539,28 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // 2. Render Foto (Menyesuaikan Bingkai Lingkaran & Aspect Ratio)
+            // 2. Render Foto Bingkai
             if (uploadedImage) {
                 ctx.save();
                 
                 let imgX, imgY, radius;
 
                 if (jenis === 'lahiran') {
-                    // Bingkai Polaroid Buaya (Sebelah Kiri)
-                    imgX = 200;
-                    imgY = 320;
-                    radius = 120;
+                    imgX = 245;
+                    imgY = 360;
+                    radius = 110;
                 } else {
                     // Bingkai Lingkaran Emas Duka Cita (Tengah)
-                    imgX = canvas.width / 2; // 500
-                    imgY = 360;              // Posisi tengah lingkaran emas
-                    radius = 110;            // Radius pas lingkaran
+                    imgX = canvas.width / 2;
+                    imgY = 310;              // Posisi foto di tengah bingkai emas
+                    radius = 90;
                 }
 
-                // Potong Lingkaran
                 ctx.beginPath();
                 ctx.arc(imgX, imgY, radius, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.clip();
 
-                // Hitung skala aspect cover (Foto Otomatis Pas Full Lingkaran)
                 let imgWidth = uploadedImage.naturalWidth || uploadedImage.width;
                 let imgHeight = uploadedImage.naturalHeight || uploadedImage.height;
                 let diameter = radius * 2;
@@ -579,7 +576,7 @@
                 ctx.restore();
             }
 
-            // 3. Render Teks Nama & Keterangan
+            // 3. Render Teks Nama & Detail
             ctx.textAlign = "center";
             let bpk = document.getElementById('namaBpk').value;
             let ibu = document.getElementById('namaIbu').value;
@@ -589,50 +586,49 @@
             if (jenis === 'lahiran') {
                 // --- TEMA KELAHIRAN ---
                 let startX = 670;
-                let startY = 470;
-
+                let startY = 330;
                 ctx.fillStyle = "#0d6efd";
                 ctx.font = "bold 32px 'Playfair Display', serif";
                 ctx.fillText(nama, startX, startY);
 
-                startY += 35;
+                startY = 372;
                 ctx.fillStyle = "#2b2b2b";
-                ctx.font = "600 18px 'Inter', sans-serif";
+                ctx.font = "600 16px 'Inter', sans-serif";
                 let ortuText = "";
                 if (bpk && ibu) ortuText = `Putra/Putri dari Bpk ${bpk} & Ibu ${ibu}`;
                 else if (bpk) ortuText = `Anak dari Bpk ${bpk}`;
                 else if (ibu) ortuText = `Anak dari Ibu ${ibu}`;
                 if (ortuText) ctx.fillText(ortuText, startX, startY);
 
-                startY += 28;
+                startY += 24;
                 ctx.fillStyle = "#444444";
-                ctx.font = "500 16px 'Inter', sans-serif";
+                ctx.font = "500 15px 'Inter', sans-serif";
                 ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
 
             } else {
-                // --- TEMA DUKA CITA ---
+                // --- TEMA DUKA CITA (POSISI DINAIKKAN PAS PITA EMAS) ---
                 let startX = canvas.width / 2;
 
-                // Nama Almarhum/ah pas di dalam Pita Emas
-                let startY = 475;
+                // A. Nama Almarhum/ah (Pas di Pita Emas Lingkaran)
+                let startY = 395;
                 ctx.fillStyle = "#1b4332";
-                ctx.font = "bold 30px 'Playfair Display', serif";
+                ctx.font = "bold 28px 'Playfair Display', serif";
                 ctx.fillText(nama, startX, startY);
 
-                // Keterangan Keluarga (Di bawah pita)
-                startY = 540;
+                // B. Keterangan Keluarga (Di bawah pita)
+                startY = 445;
                 ctx.fillStyle = "#2b2b2b";
-                ctx.font = "600 18px 'Inter', sans-serif";
+                ctx.font = "600 16px 'Inter', sans-serif";
                 let ortuText = "";
                 if (bpk && ibu) ortuText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
                 else if (bpk) ortuText = `Orang Tua dari Bpk ${bpk}`;
                 else if (ibu) ortuText = `Orang Tua dari Ibu ${ibu}`;
                 if (ortuText) ctx.fillText(ortuText, startX, startY);
 
-                // Alamat
-                startY += 28;
+                // C. Alamat
+                startY += 23;
                 ctx.fillStyle = "#555555";
-                ctx.font = "500 16px 'Inter', sans-serif";
+                ctx.font = "500 15px 'Inter', sans-serif";
                 ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
             }
         };
@@ -665,6 +661,11 @@
             loadKasRT();
             loadKasDansos();
             loadSurat();
+
+            // Render Ulang Otomatis Saat Font Selesai Load
+            document.fonts.ready.then(function () {
+                generateCard();
+            });
 
             const formKeuangan = document.getElementById('formKeuangan');
             if (formKeuangan) {
