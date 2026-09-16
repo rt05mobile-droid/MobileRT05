@@ -1,709 +1,263 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOBILE RT 05 - Oleana Park</title>
-    
-    <link rel="icon" type="image/png" href="logo.png?v=7">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
-    
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 230px; padding-bottom: 50px; }
-        .fixed-top-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1040; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .hero-section { color: white; padding: 15px 0 10px 0; }
-        .logo-rt { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 2px solid white; background: white; }
-        .hero-section h1 { font-size: 1.1rem; margin-bottom: 0; }
-        .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
-        .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
-        
-        .card-menu { 
-            border: none; 
-            border-radius: 18px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06); 
-            cursor: pointer; 
-            transition: transform 0.15s ease, background-color 0.15s ease; 
-            background: white; 
-            height: 90px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            position: relative;
-            z-index: 10;
-            pointer-events: auto !important;
-            touch-action: manipulation;
-        }
-        .card-menu:active { transform: scale(0.92); background-color: #f8f9fa; }
-        .card-menu * { pointer-events: none !important; }
-        
-        .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
-        .card-menu small { font-size: 0.75rem; font-weight: 700; color: #0a58ca; }
-        
-        .card-menu-input { border: 2px solid #ffc107; background: #fffdf5; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Kartu Ucapan Duka Cita</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-        .content-section { display: none; margin-top: 15px; animation: fadeIn 0.4s ease-in-out; }
-        .active-section { display: block !important; }
-        
-        .table-responsive { background: white; border-radius: 15px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .status-ok { background-color: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
-        .status-wait { background-color: #f8d7da; color: #842029; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
-        
-        .kas-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; }
-        .text-pemasukan { color: #198754; font-weight: 700; }
-        .text-pengeluaran { color: #dc3545; font-weight: 700; }
+    body {
+      background-color: #f4f6f9;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        .surat-item { padding: 10px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .sub-tab-btn { font-size: 0.75rem; font-weight: 700; border-radius: 10px; }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #1b4332;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    /* Container Preview Gambar dibuat lebih tinggi & lega */
+    .preview-box {
+      margin-top: 20px;
+      width: 100%;
+      min-height: 420px;
+      background-color: #eaeaea;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #ddd;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-generate { background-color: #2d6a4f; }
+    .btn-download { background-color: #007bff; }
+  </style>
 </head>
 <body>
 
-    <!-- HEADER FIXED -->
-    <div class="fixed-top-header">
-        <header class="hero-section text-center">
-            <div class="container">
-                <img src="logo.png" id="mainAppLogo" alt="Logo RT" class="logo-rt" onerror="this.src='https://via.placeholder.com/75'">
-                <h1 class="fw-bold">MOBILE RT 05</h1>
-                <p class="opacity-75">Oleana Park • RW 18</p>
-            </div>
-        </header>
-        <div class="running-text-container">
-            <marquee direction="left" scrollamount="5">📢 INFO: Cek Iuran, Laporan Kas, dan Agenda RT 05 Oleana Park.</marquee>
-        </div>
-    </div>
+<div class="container">
+  <h2>Form Kartu Duka Cita</h2>
+  
+  <div class="form-group">
+    <label>Nama Almarhum / Almarhumah:</label>
+    <input type="text" id="inputAlmarhum" value="Alm. Ibu Sutimi">
+  </div>
+  
+  <div class="form-group">
+    <label>Nama Ayah (Bpk):</label>
+    <input type="text" id="inputAyah" value="Sukardi">
+  </div>
 
-    <main class="container py-2">
-        <!-- MENU UTAMA -->
-        <div class="row g-2 text-center">
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-warga')"><div class="icon-size">🔎</div><small>Cek Iuran</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas')"><div class="icon-size">💰</div><small>Kas RT</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas-dansos')"><div class="icon-size">🤝</div><small>Kas Dansos</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-surat')"><div class="icon-size">📁</div><small>Surat</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-agenda')"><div class="icon-size">📅</div><small>Agenda</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-ucapan')"><div class="icon-size">🖼️</div><small>Buat Ucapan</small></div></div>
-            <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
-            
-            <div class="col-4">
-                <div class="card card-menu card-menu-input" onclick="bukaInputKas()">
-                    <div class="icon-size">
-                        <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M54 32 H65 V18 H76 L59 3 L42 18 H54 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
-                            <path d="M46 68 H35 V82 H24 L41 97 L58 82 H46 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
-                            <rect x="10" y="26" width="80" height="48" rx="5" fill="#8BE653" stroke="#000000" stroke-width="5"/>
-                            <path d="M19 32 C24 32 24 32 24 36 V64 C24 68 19 68 19 68 H81 C76 68 76 68 76 64 V36 C76 32 81 32 81 32 Z" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>
-                            <circle cx="50" cy="50" r="15" fill="#8BE653" stroke="#000000" stroke-width="5"/>
-                            <path d="M50 41 V59 M45 44 C45 44 47.5 42 50.5 42 C53.5 42 54.5 44.5 51.5 47.5 C48.5 50.5 45.5 51.5 48.5 54.5 C51.5 57.5 55 56.5 55 56.5" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <small>Input Kas</small>
-                </div>
-            </div>
-            
-            <div class="col-4"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekr</small></div></div>
-        </div>
+  <div class="form-group">
+    <label>Nama Ibu:</label>
+    <input type="text" id="inputIbu" value="Aisyah">
+  </div>
 
-        <hr class="my-3">
+  <div class="form-group">
+    <label>Alamat / Blok Rumah:</label>
+    <input type="text" id="inputAlamat" value="Blok A2 No. 15">
+  </div>
 
-        <!-- SECTION: CEK IURAN -->
-        <div id="section-warga" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">🔎 CEK IURAN WARGA</h6>
-            <div class="input-group mb-3">
-                <input type="text" id="inputBlok" class="form-control" placeholder="Ketik Blok (Contoh: A2 NO 23)">
-                <button class="btn btn-primary fw-bold" onclick="cariRiwayat()">CARI</button>
-            </div>
-            <div id="hasil-pencarian" style="display:none;">
-                <div class="table-responsive">
-                    <table class="table mb-0 text-center small">
-                        <tbody id="tabel-riwayat"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+  <div class="btn-group">
+    <button class="btn-generate" onclick="updateCard()">Update Gambar</button>
+    <button class="btn-download" onclick="downloadCard()">Download Gambar</button>
+  </div>
 
-        <!-- SECTION: KAS RT -->
-        <div id="section-kas" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">💰 LAPORAN KAS RT</h6>
-            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
-                <small class="text-muted fw-bold">SALDO AKHIR</small>
-                <h3 class="fw-bold text-primary mt-1" id="total-saldo">Rp 0</h3>
-            </div>
-            <div id="list-kas" class="table-responsive p-3">
-                <p class="text-center text-muted">Memuat data...</p>
-            </div>
-        </div>
+  <!-- Area Preview Gambar -->
+  <div class="preview-box">
+    <img id="cardPreview" alt="Preview Kartu Duka Cita">
+  </div>
+</div>
 
-        <!-- SECTION: KAS DANSOS -->
-        <div id="section-kas-dansos" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">🤝 LAPORAN KAS DANA SOSIAL (DANSOS)</h6>
-            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
-                <small class="text-muted fw-bold">SALDO AKHIR KAS DANSOS</small>
-                <h3 class="fw-bold text-success mt-1" id="total-saldo-dansos">Rp 0</h3>
-            </div>
-            <div id="list-kas-dansos" class="table-responsive p-3">
-                <p class="text-center text-muted">Memuat data kas dansos...</p>
-            </div>
-        </div>
+<script>
+function generateDukaCitaCard(data) {
+  const canvas = document.createElement('canvas');
+  // 1. Ketinggian Canvas ditingkatkan dari 800px ke 980px agar area bawah lega
+  canvas.width = 1200;
+  canvas.height = 980;
 
-        <!-- SECTION: AGENDA -->
-        <div id="section-agenda" class="content-section active-section">
-            <h6 class="fw-bold text-primary mb-3">📅 Agenda Kegiatan</h6>
-            <div id="list-agenda"></div>
-        </div>
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
 
-        <!-- SECTION: SURAT -->
-        <div id="section-surat" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">📁 Bank Data & Arsip RT</h6>
-            <div id="list-surat" class="table-responsive p-3">
-                <p class="text-center text-muted">Memuat dokumen...</p>
-            </div>
-        </div>
+  // --- BACKGROUND ---
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        <!-- SECTION: BUAT UCAPAN -->
-        <div id="section-ucapan" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN</h6>
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Pilih Jenis Ucapan</label>
-                    <select id="jenisUcapan" class="form-select form-select-sm fw-bold text-primary" onchange="switchTemaUcapan()">
-                        <option value="duka">🖤 Turut Berduka Cita</option>
-                        <option value="lahiran">👶 Ucapan Kelahiran (Melahirkan)</option>
-                    </select>
-                </div>
+  // Bingkai Luar Halus
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 10;
+  ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-                <div class="mb-2">
-                    <label class="form-label small fw-bold" id="labelFoto">Unggah Foto Almarhum/ah (Opsional)</label>
-                    <input type="file" id="inputFoto" class="form-control form-control-sm" accept="image/*" onchange="handleImageUpload(event)">
-                </div>
-                <div class="mb-2">
-                    <label class="form-label small fw-bold" id="labelNama">Nama Almarhum / Almarhumah</label>
-                    <input type="text" id="namaMeninggal" class="form-control form-control-sm" value="Alm. Ibu Sutimi" oninput="generateCard()">
-                </div>
-                <div class="row g-2 mb-2">
-                    <div class="col-6">
-                        <label class="form-label small fw-bold" id="labelBpk">Ayah / Orang Tua (Bpk)</label>
-                        <input type="text" id="namaBpk" class="form-control form-control-sm" value="Sukardi" oninput="generateCard()">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small fw-bold" id="labelIbu">Ibu</label>
-                        <input type="text" id="namaIbu" class="form-control form-control-sm" value="Aisyah" oninput="generateCard()">
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Alamat / Blok Rumah</label>
-                    <input type="text" id="alamatBlok" class="form-control form-control-sm" value="Blok A2 No. 15" oninput="generateCard()">
-                </div>
+  // --- HEADER: PITA HIJAU "TURUT BERDUKA CITA" ---
+  ctx.fillStyle = '#1b4332';
+  ctx.beginPath();
+  ctx.moveTo(120, 70);
+  ctx.lineTo(1080, 70);
+  ctx.lineTo(1020, 155);
+  ctx.lineTo(180, 155);
+  ctx.closePath();
+  ctx.fill();
 
-                <div class="text-center my-2">
-                    <canvas id="cardCanvas" width="1000" height="700" style="width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
-                </div>
+  // Teks Header "TURUT BERDUKA CITA"
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 54px Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('TURUT BERDUKA CITA', centerX, 130);
 
-                <div class="d-flex gap-2 mt-3">
-                    <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="downloadImage()">📥 Download Gambar</button>
-                    <button class="btn btn-success btn-sm w-50 fw-bold" onclick="shareWhatsApp()">📲 Share WA</button>
-                </div>
-            </div>
-        </div>
+  // Sub-header "ATAS MENINGGALNYA"
+  ctx.fillStyle = '#2d6a4f';
+  ctx.font = 'bold 32px Arial, sans-serif';
+  ctx.fillText('- ATAS MENINGGALNYA -', centerX, 215);
 
-        <!-- SECTION: INPUT KAS -->
-        <div id="section-input-kas" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">➕ INPUT TRANSAKSI KAS</h6>
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <form id="formKeuangan">
-                    <div class="mb-2">
-                        <label class="form-label small fw-bold">Tanggal</label>
-                        <input type="date" id="inputTanggal" class="form-control form-control-sm" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label small fw-bold">Jenis Kas / Transaksi</label>
-                        <select id="inputJenis" class="form-select form-select-sm" required>
-                            <option value="Pemasukan Kas RT">Pemasukan Kas RT</option>
-                            <option value="Pengeluaran Kas RT">Pengeluaran Kas RT</option>
-                            <option value="Pemasukan Kas Dansos">Pemasukan Kas Dansos</option>
-                            <option value="Pengeluaran Kas Dansos">Pengeluaran Kas Dansos</option>
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label small fw-bold">Keterangan / Keperluan</label>
-                        <input type="text" id="inputKeterangan" class="form-control form-control-sm" placeholder="Contoh: Iuran Bpk Ahmad / Beli Lampu" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Nominal (Rp)</label>
-                        <input type="number" id="inputNominal" class="form-control form-control-sm" placeholder="Contoh: 50000" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 btn-sm fw-bold">Simpan ke Google Sheets</button>
-                </form>
-                <p id="statusInput" class="text-center small mt-2 fw-bold"></p>
-            </div>
-        </div>
+  // --- AREA LINGKARAN EMAS (FOTO / NAMA ALMARHUM) ---
+  const centerY = 375;
+  const radius = 135;
 
-        <!-- SECTION: SARAN -->
-        <div id="section-saran" class="content-section">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScitJ8ETSNOci1Ool2Qs9GggIbfr3N4Mm9_hg4WmsrKdwtWvQ/viewform?embedded=true" width="100%" height="600" frameborder="0">Memuat…</iframe>
-        </div>
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+  ctx.lineWidth = 14;
+  ctx.strokeStyle = '#d4af37';
+  ctx.stroke();
 
-        <!-- SECTION: ADMIN SEKRETARIAT -->
-        <div id="section-internal" class="content-section">
-            <h6 class="fw-bold text-primary mb-3 text-center">💼 ADMIN SEKRETARIAT RT 05</h6>
-            <div class="d-flex justify-content-center gap-2 mb-3">
-                <button class="btn btn-outline-primary sub-tab-btn active" onclick="switchAdminTab('tab-db-warga', this)">👥 Data Warga</button>
-                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat Penting</button>
-            </div>
-            <div id="tab-db-warga" class="admin-sub-content">
-                <div class="table-responsive">
-                    <table class="table table-sm small">
-                        <thead class="table-dark"><tr id="header-db"></tr></thead>
-                        <tbody id="body-db"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div id="tab-surat-penting" class="admin-sub-content" style="display:none;">
-                <div id="list-surat-penting" class="table-responsive p-3">
-                    <p class="text-center text-muted">Memuat berkas rahasia & surat penting...</p>
-                </div>
-            </div>
-        </div>
-    </main>
+  // Nama Almarhum/Almarhumah (DIPERBESAR)
+  ctx.fillStyle = '#111827';
+  ctx.font = 'bold 52px Arial, sans-serif';
+  ctx.fillText(data.namaAlmarhum || 'Alm. Ibu Sutimi', centerX, centerY + 18);
 
-    <script>
-        const PIN_ADMIN = "1234";
-        const REK_BCA = "5955097731";
-        const AN_REK = "Sumantri";
+  // --- AREA PITA EMAS (ORANG TUA & ALAMAT - DIPERBESAR & DIPERBANYAK RUANG) ---
+  const ribbonY = 560;
+  const ribbonWidth = 920;
+  const ribbonHeight = 160; // Dipertinggi agar teks 2 baris muat & jelas
 
-        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/GANTI_DENGAN_ID_SCRIPT_ANDA/exec";
+  // Background Pita Emas
+  ctx.fillStyle = '#d4af37';
+  ctx.fillRect(centerX - (ribbonWidth / 2), ribbonY, ribbonWidth, ribbonHeight);
 
-        const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
-        const urlKas = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9IzJn8M1Emu0_LC4TY_cQik462FybKxEKgB9RaleHVqtOSXV17l1q_DTg2WG_a3DM2VYEzNEaKCI6/pub?gid=0&single=true&output=csv";
-        const urlSurat = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIWCVJPnol6BmfzfrmVo3Dx7ucnA1j9iuQBQmzjTVFsRr-GiJ7injvHvlvHkbq_aykB-G6GA8JVnir/pub?output=csv";
-        const urlWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT06nXtSsC_BB1RnsPRFTJyp9Nq7tqSkpN0GKVvtXLWIdewFJBMoCENViQWeN-Rw4DXqNCvQlHJswq7/pub?gid=0&single=true&output=csv";
-        const urlDatabaseWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ08pVNKL0IHTm8U7Ar79dJwFdqxh8kCZnVjhTzzeew7a4DdIKHLggTdWVGAnpXsX4VdGUz7LNj2cL/pub?gid=0&single=true&output=csv";
-        const urlKasDansos = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Z423Kht4DVS_4buGSK9WzCfUrHcBoxmGXAhIPI8Y4Z0ZCrY5aAGCUPa7CpPGSs7odrkxtcudiHRI/pub?output=csv"; 
-        const urlSuratPenting = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS93WBkMrAZJRFe6vZ80gBPJdicaUtzeciWkww4N5IwxuHLKX6aZ-FYu_miLkK-7QnE8SxtPsbJ6KZj/pub?output=csv";
+  // Border Pita Emas
+  ctx.strokeStyle = '#b38f2a';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(centerX - (ribbonWidth / 2), ribbonY, ribbonWidth, ribbonHeight);
 
-        let uploadedImage = null;
-        
-        // PANGGILAN BACKGROUND CANVA (bg_duka.jpg & bg_lahiran.jpg)
-        let bgDukaImg = new Image();
-        bgDukaImg.src = 'bg_duka.jpg';
-        bgDukaImg.onload = function() { generateCard(); };
+  // Baris 1: Teks Orang Tua (DIPERBESAR ke 36px Bold)
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 36px Arial, sans-serif';
+  const teksOrangTua = `Orang Tua dari Bpk ${data.namaAyah || 'Sukardi'} & Ibu ${data.namaIbu || 'Aisyah'}`;
+  ctx.fillText(teksOrangTua, centerX, ribbonY + 62);
 
-        let bgLahiranImg = new Image();
-        bgLahiranImg.src = 'bg_lahiran.jpg';
-        bgLahiranImg.onload = function() { generateCard(); };
+  // Baris 2: Alamat / Blok Rumah (DIPERBESAR ke 32px Bold)
+  ctx.font = 'bold 32px Arial, sans-serif';
+  ctx.fillStyle = '#1e293b';
+  const teksAlamat = `(${data.alamat || 'Blok A2 No. 15'} Oleana Park)`;
+  ctx.fillText(teksAlamat, centerX, ribbonY + 118);
 
-        // NAVIGASI GLOBAL
-        window.showSection = function(id) {
-            try {
-                document.querySelectorAll('.content-section').forEach(s => {
-                    s.classList.remove('active-section');
-                    s.style.display = 'none';
-                });
-                let target = document.getElementById(id);
-                if (target) {
-                    target.classList.add('active-section');
-                    target.style.display = 'block';
-                    if (id === 'section-ucapan') generateCard();
-                }
-            } catch (e) {
-                console.error("Error pada showSection:", e);
-            }
-        };
+  // --- FOOTER / PENGURUS RT (HIJAU TUA) ---
+  const footerY = 770;
+  const footerHeight = 150;
 
-        window.bukaInputKas = function() {
-            let pin = prompt("Masukkan PIN Petugas Input Kas:");
-            if (pin === PIN_ADMIN) {
-                window.showSection('section-input-kas');
-            } else if (pin !== null) {
-                alert("PIN Salah!");
-            }
-        };
+  ctx.fillStyle = '#1b4332';
+  ctx.fillRect(50, footerY, canvas.width - 100, footerHeight);
 
-        window.bukaInternal = function() {
-            let pin = prompt("Masukkan PIN Admin Sekretariat:");
-            if (pin === PIN_ADMIN) {
-                window.showSection('section-internal');
-                loadDatabaseWarga();
-                loadSuratPenting();
-            } else if (pin !== null) {
-                alert("PIN Salah!");
-            }
-        };
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 40px Arial, sans-serif';
+  ctx.fillText('KETUA RT05', centerX, footerY + 60);
 
-        window.switchAdminTab = function(tabId, btnElement) {
-            document.querySelectorAll('.admin-sub-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).style.display = 'block';
-            btnElement.classList.add('active');
-        };
+  ctx.font = 'bold 34px Arial, sans-serif';
+  ctx.fillText('& JAJARAN PENGURUS RT05 RW18', centerX, footerY + 115);
 
-        async function fetchCSV(url) {
-            try {
-                const response = await fetch(url + '&t=' + new Date().getTime());
-                if (!response.ok) throw new Error("Gagal mengambil data");
-                const data = await response.text();
-                return data.split("\n").filter(row => row.trim() !== "").map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
-            } catch (e) { 
-                return []; 
-            }
-        }
+  return canvas.toDataURL('image/png');
+}
 
-        function formatRupiah(angka) {
-            return "Rp " + Math.abs(parseInt(angka) || 0).toLocaleString('id-ID');
-        }
+// Fungsi untuk memperbarui preview
+function updateCard() {
+  const data = {
+    namaAlmarhum: document.getElementById('inputAlmarhum').value,
+    namaAyah: document.getElementById('inputAyah').value,
+    namaIbu: document.getElementById('inputIbu').value,
+    alamat: document.getElementById('inputAlamat').value
+  };
 
-        window.cariRiwayat = async function() {
-            let inputRaw = document.getElementById('inputBlok').value;
-            let inputBersih = inputRaw.toUpperCase().trim().replace(/[^A-Z0-9]/g, "");
-            if(!inputBersih) return alert("Ketik nomor blok!");
+  const imgBase64 = generateDukaCitaCard(data);
+  document.getElementById('cardPreview').src = imgBase64;
+}
 
-            const dW = await fetchCSV(urlWarga);
-            if(dW.length === 0) return alert("Gagal memuat data warga dari koneksi internet.");
+// Fungsi Download Gambar
+function downloadCard() {
+  const imgSrc = document.getElementById('cardPreview').src;
+  if (!imgSrc) return;
 
-            let html = ""; let found = false; let header = dW[0]; let namaWarga = "";
+  const link = document.createElement('a');
+  link.download = 'Ucapan_Duka_Cita_RT05.png';
+  link.href = imgSrc;
+  link.click();
+}
 
-            for (let i = 0; i < dW.length; i++) {
-                let cellBlok = (dW[i][0] || "").replace(/[^A-Z0-9]/g, "").toUpperCase();
-                if (cellBlok === inputBersih) {
-                    found = true;
-                    namaWarga = dW[i][1] ? dW[i][1].replace(/"/g,'').trim() : "Warga RT 05";
-                    for(let j = 2; j < dW[i].length; j++) {
-                        let status = dW[i][j] ? dW[i][j].replace(/"/g,'').trim() : "";
-                        if (status !== "") {
-                            let css = status.toLowerCase().includes('lunas') ? 'status-ok' : 'status-wait';
-                            html += `<tr><td class="fw-bold">${header[j] ? header[j].replace(/"/g,'') : ''}</td><td><span class="${css}">${status}</span></td></tr>`;
-                        }
-                    }
-                    break;
-                }
-            }
+// Jalankan otomatis saat halaman pertama kali dimuat
+window.onload = updateCard;
+</script>
 
-            if(found) {
-                let infoRek = `<tr><td colspan="2" class="bg-light p-3 text-center border-top">
-                    <small class="text-muted d-block">Transfer Iuran ke Bendahara:</small>
-                    <b class="text-primary d-block">BCA ${REK_BCA}</b>
-                    <span class="badge bg-secondary">A/n ${AN_REK}</span>
-                </td></tr>`;
-                document.getElementById('tabel-riwayat').innerHTML = `<tr><th colspan="2" class="table-dark text-center" style="border-radius:10px 10px 0 0">${namaWarga}</th></tr>` + html + infoRek;
-                document.getElementById('hasil-pencarian').style.display = "block";
-            } else { alert("Data Blok tidak ditemukan!"); }
-        };
-
-        async function loadKasDansos() {
-            try {
-                const dK = await fetchCSV(urlKasDansos);
-                let total = 0; let htmlK = "";
-                if(dK.length > 1) {
-                    dK.slice(1).forEach(r => {
-                        if(r[1]) {
-                            let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
-                            total += nominal;
-                            let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
-                            htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0] ? r[0].replace(/"/g,'') : ''}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
-                        }
-                    });
-                }
-                document.getElementById('total-saldo-dansos').innerText = formatRupiah(total);
-                document.getElementById('list-kas-dansos').innerHTML = htmlK || '<p class="text-center text-muted">Belum ada transaksi.</p>';
-            } catch(err) {
-                document.getElementById('list-kas-dansos').innerHTML = '<p class="text-center text-danger">Gagal memuat kas dansos.</p>';
-            }
-        }
-
-        async function loadKasRT() {
-            try {
-                const dK = await fetchCSV(urlKas);
-                let total = 0; let htmlK = "";
-                if(dK.length > 1) {
-                    dK.slice(1).forEach(r => {
-                        if(r[1]) {
-                            let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
-                            total += nominal;
-                            let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
-                            htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0] ? r[0].replace(/"/g,'') : ''}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
-                        }
-                    });
-                }
-                document.getElementById('total-saldo').innerText = formatRupiah(total);
-                document.getElementById('list-kas').innerHTML = htmlK || '<p class="text-center text-muted">Belum ada transaksi.</p>';
-            } catch(err) {
-                document.getElementById('list-kas').innerHTML = '<p class="text-center text-danger">Gagal memuat kas RT.</p>';
-            }
-        }
-
-        async function loadAgenda() {
-            try {
-                const dA = await fetchCSV(urlAgenda);
-                let htmlA = "";
-                if(dA.length > 1) {
-                    dA.slice(1).forEach(r => {
-                        if(r[0]) {
-                            htmlA += `<div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-white"><div class="d-flex justify-content-between align-items-center"><span class="badge bg-primary">${r[0]}</span><small class="text-muted">${r[1]||''}</small></div><h6 class="fw-bold mt-2 mb-1">${r[2]||''}</h6><small class="text-secondary">${r[3]||''}</small></div>`;
-                        }
-                    });
-                }
-                document.getElementById('list-agenda').innerHTML = htmlA || '<p class="text-center text-muted">Belum ada agenda.</p>';
-            } catch(err) {
-                document.getElementById('list-agenda').innerHTML = '<p class="text-center text-danger">Gagal memuat agenda.</p>';
-            }
-        }
-
-        async function loadSurat() {
-            try {
-                const dS = await fetchCSV(urlSurat);
-                let htmlS = "";
-                if(dS.length > 1) {
-                    dS.slice(1).forEach(r => {
-                        if(r[0]) {
-                            htmlS += `<div class="surat-item"><div><b>${r[0]}</b><small class="text-muted d-block">${r[1]||''}</small></div><a href="${r[2]}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">Unduh</a></div>`;
-                        }
-                    });
-                }
-                document.getElementById('list-surat').innerHTML = htmlS || '<p class="text-center text-muted">Belum ada surat.</p>';
-            } catch(err) {
-                document.getElementById('list-surat').innerHTML = '<p class="text-center text-danger">Gagal memuat surat.</p>';
-            }
-        }
-
-        async function loadDatabaseWarga() {
-            const dB = await fetchCSV(urlDatabaseWarga);
-            if(dB.length === 0) return;
-            let headerHtml = ""; dB[0].forEach(h => headerHtml += `<th>${h.replace(/"/g,'')}</th>`);
-            let bodyHtml = "";
-            dB.slice(1).forEach(r => {
-                bodyHtml += "<tr>";
-                r.forEach(c => bodyHtml += `<td>${c.replace(/"/g,'')}</td>`);
-                bodyHtml += "</tr>";
-            });
-            document.getElementById('header-db').innerHTML = headerHtml;
-            document.getElementById('body-db').innerHTML = bodyHtml;
-        }
-
-        async function loadSuratPenting() {
-            const dSP = await fetchCSV(urlSuratPenting);
-            let htmlSP = "";
-            if(dSP.length > 1) {
-                dSP.slice(1).forEach(r => {
-                    if(r[0]) {
-                        htmlSP += `<div class="surat-item"><div><b>${r[0]}</b><small class="text-muted d-block">${r[1]||''}</small></div><a href="${r[2]}" target="_blank" class="btn btn-sm btn-outline-danger fw-bold">Akses</a></div>`;
-                    }
-                });
-            }
-            document.getElementById('list-surat-penting').innerHTML = htmlSP || '<p class="text-center text-muted">Belum ada berkas rahasia.</p>';
-        }
-
-        // SWITCH TEMA UCAPAN
-        window.switchTemaUcapan = function() {
-            let jenis = document.getElementById('jenisUcapan').value;
-            if (jenis === 'lahiran') {
-                document.getElementById('labelFoto').innerText = "Unggah Foto Bayi (Opsional)";
-                document.getElementById('labelNama').innerText = "Nama Bayi / Anak";
-                document.getElementById('namaMeninggal').value = "Muhammad Azka";
-            } else {
-                document.getElementById('labelFoto').innerText = "Unggah Foto Almarhum/ah (Opsional)";
-                document.getElementById('labelNama').innerText = "Nama Almarhum / Almarhumah";
-                document.getElementById('namaMeninggal').value = "Alm. Ibu Sutimi";
-            }
-            generateCard();
-        };
-
-        window.handleImageUpload = function(e) {
-            let reader = new FileReader();
-            reader.onload = function(event) {
-                uploadedImage = new Image();
-                uploadedImage.onload = function() { generateCard(); };
-                uploadedImage.src = event.target.result;
-            }
-            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-        };
-
-        // RENDER KARTU CANVAS PRESISI
-        window.generateCard = function() {
-            let canvas = document.getElementById('cardCanvas');
-            if(!canvas) return;
-            let ctx = canvas.getContext('2d');
-            let jenis = document.getElementById('jenisUcapan').value;
-            
-            let activeBg = (jenis === 'lahiran') ? bgLahiranImg : bgDukaImg;
-
-            // 1. Render Background Canva
-            if (activeBg.complete && activeBg.naturalWidth !== 0) {
-                ctx.drawImage(activeBg, 0, 0, canvas.width, canvas.height);
-            } else {
-                ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-
-            // 2. Render Foto Bingkai
-            if (uploadedImage) {
-                ctx.save();
-                
-                let imgX, imgY, radius;
-
-                if (jenis === 'lahiran') {
-                    imgX = 245;
-                    imgY = 360;
-                    radius = 110;
-                } else {
-                    // Bingkai Lingkaran Emas Duka Cita (Tengah)
-                    imgX = canvas.width / 2;
-                    imgY = 310;              // Posisi foto di tengah bingkai emas
-                    radius = 90;
-                }
-
-                ctx.beginPath();
-                ctx.arc(imgX, imgY, radius, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.clip();
-
-                let imgWidth = uploadedImage.naturalWidth || uploadedImage.width;
-                let imgHeight = uploadedImage.naturalHeight || uploadedImage.height;
-                let diameter = radius * 2;
-                
-                let scale = Math.max(diameter / imgWidth, diameter / imgHeight);
-                let renderW = imgWidth * scale;
-                let renderH = imgHeight * scale;
-                
-                let drawX = imgX - (renderW / 2);
-                let drawY = imgY - (renderH / 2);
-
-                ctx.drawImage(uploadedImage, drawX, drawY, renderW, renderH);
-                ctx.restore();
-            }
-
-            // 3. Render Teks Nama & Detail
-            ctx.textAlign = "center";
-            let bpk = document.getElementById('namaBpk').value;
-            let ibu = document.getElementById('namaIbu').value;
-            let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
-            let nama = document.getElementById('namaMeninggal').value || "Nama";
-
-            if (jenis === 'lahiran') {
-                // --- TEMA KELAHIRAN ---
-                let startX = 670;
-                let startY = 330;
-                ctx.fillStyle = "#0d6efd";
-                ctx.font = "bold 32px 'Playfair Display', serif";
-                ctx.fillText(nama, startX, startY);
-
-                startY = 372;
-                ctx.fillStyle = "#2b2b2b";
-                ctx.font = "600 16px 'Inter', sans-serif";
-                let ortuText = "";
-                if (bpk && ibu) ortuText = `Putra/Putri dari Bpk ${bpk} & Ibu ${ibu}`;
-                else if (bpk) ortuText = `Anak dari Bpk ${bpk}`;
-                else if (ibu) ortuText = `Anak dari Ibu ${ibu}`;
-                if (ortuText) ctx.fillText(ortuText, startX, startY);
-
-                startY += 24;
-                ctx.fillStyle = "#444444";
-                ctx.font = "500 15px 'Inter', sans-serif";
-                ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
-
-            } else {
-                // --- TEMA DUKA CITA (POSISI DINAIKKAN PAS PITA EMAS) ---
-                let startX = canvas.width / 2;
-
-                // A. Nama Almarhum/ah (Pas di Pita Emas Lingkaran)
-                let startY = 395;
-                ctx.fillStyle = "#1b4332";
-                ctx.font = "bold 28px 'Playfair Display', serif";
-                ctx.fillText(nama, startX, startY);
-
-                // B. Keterangan Keluarga (Di bawah pita)
-                startY = 445;
-                ctx.fillStyle = "#2b2b2b";
-                ctx.font = "600 16px 'Inter', sans-serif";
-                let ortuText = "";
-                if (bpk && ibu) ortuText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
-                else if (bpk) ortuText = `Orang Tua dari Bpk ${bpk}`;
-                else if (ibu) ortuText = `Orang Tua dari Ibu ${ibu}`;
-                if (ortuText) ctx.fillText(ortuText, startX, startY);
-
-                // C. Alamat
-                startY += 23;
-                ctx.fillStyle = "#555555";
-                ctx.font = "500 15px 'Inter', sans-serif";
-                ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
-            }
-        };
-
-        window.downloadImage = function() {
-            let canvas = document.getElementById('cardCanvas');
-            let jenis = document.getElementById('jenisUcapan').value;
-            let link = document.createElement('a');
-            link.download = (jenis === 'lahiran') ? 'Ucapan_Kelahiran_RT05.png' : 'Ucapan_Duka_Cita_RT05.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        };
-
-        window.shareWhatsApp = function() {
-            let jenis = document.getElementById('jenisUcapan').value;
-            let nama = document.getElementById('namaMeninggal').value;
-            let teks = "";
-
-            if (jenis === 'lahiran') {
-                teks = `Selamat atas kelahiran putra/putri dari keluarga *${nama}*! 👶\nSemoga menjadi anak yang soleh/solehah dan membawa keberkahan.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
-            } else {
-                teks = `Innalillahi wa inna ilaihi raji'un.\n\nTelah berpulang ke Rahmatullah *${nama}*.\nSemoga Husnul Khotimah.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
-            }
-
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
-        };
-
-        window.addEventListener('DOMContentLoaded', function() {
-            loadAgenda();
-            loadKasRT();
-            loadKasDansos();
-            loadSurat();
-
-            // Render Ulang Otomatis Saat Font Selesai Load
-            document.fonts.ready.then(function () {
-                generateCard();
-            });
-
-            const formKeuangan = document.getElementById('formKeuangan');
-            if (formKeuangan) {
-                formKeuangan.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    let status = document.getElementById('statusInput');
-                    
-                    if (URL_APPS_SCRIPT.includes("GANTI_DENGAN_ID_SCRIPT_ANDA")) {
-                        status.innerHTML = "<span class='text-danger'>URL Web App Google Script belum diatur!</span>";
-                        return;
-                    }
-
-                    status.innerHTML = "<span class='text-warning'>Mengirim data...</span>";
-
-                    let payload = {
-                        tanggal: document.getElementById('inputTanggal').value,
-                        jenis: document.getElementById('inputJenis').value,
-                        keterangan: document.getElementById('inputKeterangan').value,
-                        nominal: document.getElementById('inputNominal').value
-                    };
-
-                    fetch(URL_APPS_SCRIPT, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    })
-                    .then(res => res.text())
-                    .then(data => {
-                        status.innerHTML = "<span class='text-success'>Data berhasil disimpan!</span>";
-                        document.getElementById('formKeuangan').reset();
-                        loadKasRT();
-                        loadKasDansos();
-                    })
-                    .catch(err => {
-                        status.innerHTML = "<span class='text-danger'>Gagal menyimpan data.</span>";
-                    });
-                });
-            }
-        });
-    </script>
 </body>
 </html>
