@@ -7,10 +7,9 @@
     
     <link rel="icon" type="image/png" href="logo.png?v=7">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cinzel:wght@600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
-        /* Padding-top dinaikkan ke 230px agar form tidak tertutup header & running text */
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 230px; padding-bottom: 50px; }
         .fixed-top-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1040; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .hero-section { color: white; padding: 15px 0 10px 0; }
@@ -289,7 +288,7 @@
 
         let uploadedImage = null;
         
-        // PANGGILAN BG KANVA (bg_duka.jpg & bg_lahiran.jpg)
+        // PANGGILAN BACKGROUND CANVA (bg_duka.jpg & bg_lahiran.jpg)
         let bgDukaImg = new Image();
         bgDukaImg.src = 'bg_duka.jpg';
         bgDukaImg.onload = function() { generateCard(); };
@@ -523,16 +522,16 @@
             if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
         };
 
+        // RENDER KARTU CANVAS PRESISI
         window.generateCard = function() {
             let canvas = document.getElementById('cardCanvas');
             if(!canvas) return;
             let ctx = canvas.getContext('2d');
             let jenis = document.getElementById('jenisUcapan').value;
             
-            // Menggunakan bg_duka.jpg atau bg_lahiran.jpg
             let activeBg = (jenis === 'lahiran') ? bgLahiranImg : bgDukaImg;
 
-            // 1. Gambar Background Canva
+            // 1. Render Background Canva
             if (activeBg.complete && activeBg.naturalWidth !== 0) {
                 ctx.drawImage(activeBg, 0, 0, canvas.width, canvas.height);
             } else {
@@ -540,57 +539,102 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // 2. Gambar Foto di Bingkai Bulat
+            // 2. Render Foto (Menyesuaikan Bingkai Lingkaran & Aspect Ratio)
             if (uploadedImage) {
-                let centerX = canvas.width / 2;
-                let centerY = 320;
-                let radius = 100;
-
                 ctx.save();
+                
+                let imgX, imgY, radius;
+
+                if (jenis === 'lahiran') {
+                    // Bingkai Polaroid Buaya (Sebelah Kiri)
+                    imgX = 200;
+                    imgY = 320;
+                    radius = 120;
+                } else {
+                    // Bingkai Lingkaran Emas Duka Cita (Tengah)
+                    imgX = canvas.width / 2; // 500
+                    imgY = 360;              // Posisi tengah lingkaran emas
+                    radius = 110;            // Radius pas lingkaran
+                }
+
+                // Potong Lingkaran
                 ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.arc(imgX, imgY, radius, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.clip();
-                ctx.drawImage(uploadedImage, centerX - radius, centerY - radius, radius * 2, radius * 2);
+
+                // Hitung skala aspect cover (Foto Otomatis Pas Full Lingkaran)
+                let imgWidth = uploadedImage.naturalWidth || uploadedImage.width;
+                let imgHeight = uploadedImage.naturalHeight || uploadedImage.height;
+                let diameter = radius * 2;
+                
+                let scale = Math.max(diameter / imgWidth, diameter / imgHeight);
+                let renderW = imgWidth * scale;
+                let renderH = imgHeight * scale;
+                
+                let drawX = imgX - (renderW / 2);
+                let drawY = imgY - (renderH / 2);
+
+                ctx.drawImage(uploadedImage, drawX, drawY, renderW, renderH);
                 ctx.restore();
             }
 
-            // 3. Teks Nama & Keterangan
+            // 3. Render Teks Nama & Keterangan
             ctx.textAlign = "center";
-            let startY = 490; 
-
-            // Warna Nama (Duka: Hijau Tua, Lahiran: Biru)
-            ctx.fillStyle = (jenis === 'lahiran') ? "#0d6efd" : "#1b4332";
-            ctx.font = "bold 34px 'Playfair Display', serif";
-            let nama = document.getElementById('namaMeninggal').value || "Nama";
-            ctx.fillText(nama, canvas.width / 2, startY);
-
-            // Teks Orang Tua
-            startY += 40;
-            ctx.fillStyle = "#333333";
-            ctx.font = "600 20px 'Inter', sans-serif";
             let bpk = document.getElementById('namaBpk').value;
             let ibu = document.getElementById('namaIbu').value;
-            let orangTuaText = "";
+            let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
+            let nama = document.getElementById('namaMeninggal').value || "Nama";
 
             if (jenis === 'lahiran') {
-                if (bpk && ibu) orangTuaText = `Putra/Putri dari Bpk ${bpk} & Ibu ${ibu}`;
-                else if (bpk) orangTuaText = `Anak dari Bpk ${bpk}`;
-                else if (ibu) orangTuaText = `Anak dari Ibu ${ibu}`;
+                // --- TEMA KELAHIRAN ---
+                let startX = 670;
+                let startY = 470;
+
+                ctx.fillStyle = "#0d6efd";
+                ctx.font = "bold 32px 'Playfair Display', serif";
+                ctx.fillText(nama, startX, startY);
+
+                startY += 35;
+                ctx.fillStyle = "#2b2b2b";
+                ctx.font = "600 18px 'Inter', sans-serif";
+                let ortuText = "";
+                if (bpk && ibu) ortuText = `Putra/Putri dari Bpk ${bpk} & Ibu ${ibu}`;
+                else if (bpk) ortuText = `Anak dari Bpk ${bpk}`;
+                else if (ibu) ortuText = `Anak dari Ibu ${ibu}`;
+                if (ortuText) ctx.fillText(ortuText, startX, startY);
+
+                startY += 28;
+                ctx.fillStyle = "#444444";
+                ctx.font = "500 16px 'Inter', sans-serif";
+                ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
+
             } else {
-                if (bpk && ibu) orangTuaText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
-                else if (bpk) orangTuaText = `Orang Tua dari Bpk ${bpk}`;
-                else if (ibu) orangTuaText = `Orang Tua dari Ibu ${ibu}`;
+                // --- TEMA DUKA CITA ---
+                let startX = canvas.width / 2;
+
+                // Nama Almarhum/ah pas di dalam Pita Emas
+                let startY = 475;
+                ctx.fillStyle = "#1b4332";
+                ctx.font = "bold 30px 'Playfair Display', serif";
+                ctx.fillText(nama, startX, startY);
+
+                // Keterangan Keluarga (Di bawah pita)
+                startY = 540;
+                ctx.fillStyle = "#2b2b2b";
+                ctx.font = "600 18px 'Inter', sans-serif";
+                let ortuText = "";
+                if (bpk && ibu) ortuText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
+                else if (bpk) ortuText = `Orang Tua dari Bpk ${bpk}`;
+                else if (ibu) ortuText = `Orang Tua dari Ibu ${ibu}`;
+                if (ortuText) ctx.fillText(ortuText, startX, startY);
+
+                // Alamat
+                startY += 28;
+                ctx.fillStyle = "#555555";
+                ctx.font = "500 16px 'Inter', sans-serif";
+                ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
             }
-
-            if(orangTuaText) ctx.fillText(orangTuaText, canvas.width / 2, startY);
-
-            // Alamat / Blok
-            startY += 35;
-            ctx.fillStyle = "#555555";
-            ctx.font = "500 18px 'Inter', sans-serif";
-            let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
-            ctx.fillText(`(${alamat} - Oleana Park)`, canvas.width / 2, startY);
         };
 
         window.downloadImage = function() {
