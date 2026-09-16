@@ -1,529 +1,711 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MOBILE RT 05 - Oleana Park RW 18</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOBILE RT 05 - Oleana Park</title>
+    
+    <link rel="icon" type="image/png" href="logo.png?v=7">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; padding-top: 230px; padding-bottom: 50px; }
+        .fixed-top-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1040; background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .hero-section { color: white; padding: 15px 0 10px 0; }
+        .logo-rt { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; margin-bottom: 5px; border: 2px solid white; background: white; }
+        .hero-section h1 { font-size: 1.1rem; margin-bottom: 0; }
+        .hero-section p { font-size: 0.75rem; margin-bottom: 0; }
+        .running-text-container { background-color: #ffc107; color: #212529; padding: 5px 0; font-weight: 700; font-size: 0.75rem; }
+        
+        .card-menu { 
+            border: none; 
+            border-radius: 18px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06); 
+            cursor: pointer; 
+            transition: transform 0.15s ease, background-color 0.15s ease; 
+            background: white; 
+            height: 90px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            z-index: 10;
+            pointer-events: auto !important;
+            touch-action: manipulation;
+        }
+        .card-menu:active { transform: scale(0.92); background-color: #f8f9fa; }
+        .card-menu * { pointer-events: none !important; }
+        
+        .card-menu .icon-size { font-size: 1.8rem; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
+        .card-menu small { font-size: 0.75rem; font-weight: 700; color: #0a58ca; }
+        
+        .card-menu-input { border: 2px solid #ffc107; background: #fffdf5; }
 
-    body {
-      background-color: #f4f6f9;
-      display: flex;
-      justify-content: center;
-      padding: 0;
-    }
+        .content-section { display: none; margin-top: 15px; animation: fadeIn 0.4s ease-in-out; }
+        .active-section { display: block !important; }
+        
+        .table-responsive { background: white; border-radius: 15px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .status-ok { background-color: #d1e7dd; color: #0f5132; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
+        .status-wait { background-color: #f8d7da; color: #842029; padding: 4px 10px; border-radius: 10px; font-weight: bold; font-size: 11px; }
+        
+        .kas-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; }
+        .text-pemasukan { color: #198754; font-weight: 700; }
+        .text-pengeluaran { color: #dc3545; font-weight: 700; }
 
-    .app-container {
-      width: 100%;
-      max-width: 480px;
-      background: #ffffff;
-      min-height: 100vh;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-    }
+        .surat-item { padding: 10px 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .sub-tab-btn { font-size: 0.75rem; font-weight: 700; border-radius: 10px; }
 
-    /* --- HEADER --- */
-    .header {
-      background: linear-gradient(180deg, #0052cc 0%, #0066ff 100%);
-      color: white;
-      text-align: center;
-      padding: 20px 15px 15px 15px;
-    }
-
-    .logo-circle {
-      width: 75px;
-      height: 75px;
-      background: white;
-      border-radius: 50%;
-      margin: 0 auto 10px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #ffd700;
-      overflow: hidden;
-    }
-
-    .header h1 {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-
-    .header p {
-      font-size: 13px;
-      opacity: 0.9;
-      margin-top: 2px;
-    }
-
-    /* --- RUNNING TEXT --- */
-    .ticker-wrap {
-      width: 100%;
-      background-color: #ffc107;
-      color: #000;
-      overflow: hidden;
-      white-space: nowrap;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .ticker-move {
-      display: inline-block;
-      padding-left: 100%;
-      animation: ticker 18s linear infinite;
-      font-weight: bold;
-      font-size: 13px;
-      line-height: 28px;
-    }
-
-    @keyframes ticker {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(-100%, 0, 0); }
-    }
-
-    /* --- MENU TAB CONTAINER --- */
-    .tab-nav {
-      display: flex;
-      background: #e2e8f0;
-      border-bottom: 1px solid #cbd5e1;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 10px 5px;
-      border: none;
-      background: transparent;
-      font-weight: bold;
-      font-size: 12px;
-      color: #475569;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: #ffffff;
-      color: #0052cc;
-      border-bottom: 3px solid #0052cc;
-    }
-
-    .tab-content {
-      display: none;
-      padding: 15px;
-      flex: 1;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    /* --- FORM STYLING --- */
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .form-row .form-group {
-      flex: 1;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      font-size: 13px;
-      color: #1a1a1a;
-      margin-bottom: 4px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    input:focus, select:focus {
-      border-color: #0066ff;
-    }
-
-    /* --- CANVAS PREVIEW --- */
-    .card-preview-container {
-      margin-top: 15px;
-      width: 100%;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #e0e0e0;
-      background: #fafafa;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .card-preview-container img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    /* --- BUTTONS --- */
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 12px 5px;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: bold;
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-blue { background-color: #0066ff; }
-    .btn-green { background-color: #10b981; }
-
-    /* --- DATA TABLE & LISTS --- */
-    .data-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-
-    .data-card h4 {
-      color: #0f172a;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .data-card p {
-      color: #475569;
-      font-size: 12px;
-    }
-  </style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
-<div class="app-container">
-  
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo-circle">
-      <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="#0052cc" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-      </svg>
-    </div>
-    <h1>MOBILE RT 05</h1>
-    <p>Oleana Park • RW 18</p>
-  </div>
-
-  <!-- RUNNING TEXT AGENDA -->
-  <div class="ticker-wrap">
-    <div class="ticker-move" id="runningText">
-      📢 Loading agenda RT 05 Oleana Park dari Spreadsheet...
-    </div>
-  </div>
-
-  <!-- TAB NAVIGATION MENU -->
-  <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('duka')">Surat Duka</button>
-    <button class="tab-btn" onclick="switchTab('kas')">Kas RT & Dansos</button>
-    <button class="tab-btn" onclick="switchTab('iuran')">Cek Iuran</button>
-    <button class="tab-btn" onclick="switchTab('agenda')">Agenda</button>
-  </div>
-
-  <!-- ================= TAB 1: SURAT DUKA CITA ================= -->
-  <div id="tab-duka" class="tab-content active">
-    
-    <!-- Pilih Warga dari Database Spreadsheet (Opsional Otomatisasi) -->
-    <div class="form-group">
-      <label>Pilih Data Warga (Auto-fill CSV):</label>
-      <select id="selectWarga" onchange="autoFillWarga(this.value)">
-        <option value="">-- Ketik manual atau pilih warga --</option>
-      </select>
+    <!-- HEADER FIXED -->
+    <div class="fixed-top-header">
+        <header class="hero-section text-center">
+            <div class="container">
+                <img src="logo.png" id="mainAppLogo" alt="Logo RT" class="logo-rt" onerror="this.src='https://via.placeholder.com/75'">
+                <h1 class="fw-bold">MOBILE RT 05</h1>
+                <p class="opacity-75">Oleana Park • RW 18</p>
+            </div>
+        </header>
+        <div class="running-text-container">
+            <marquee direction="left" scrollamount="5">📢 INFO: Cek Iuran, Laporan Kas, dan Agenda RT 05 Oleana Park.</marquee>
+        </div>
     </div>
 
-    <div class="form-group">
-      <label>Nama Almarhum / Almarhumah</label>
-      <input type="text" id="inputAlmarhum" value="Alm. Ibu Sutimi" oninput="updateCard()">
-    </div>
+    <main class="container py-2">
+        <!-- MENU UTAMA -->
+        <div class="row g-2 text-center">
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-warga')"><div class="icon-size">🔎</div><small>Cek Iuran</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas')"><div class="icon-size">💰</div><small>Kas RT</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-kas-dansos')"><div class="icon-size">🤝</div><small>Kas Dansos</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-surat')"><div class="icon-size">📁</div><small>Surat</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-agenda')"><div class="icon-size">📅</div><small>Agenda</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-ucapan')"><div class="icon-size">🖼️</div><small>Buat Ucapan</small></div></div>
+            <div class="col-4"><div class="card card-menu" onclick="showSection('section-saran')"><div class="icon-size">📩</div><small>Saran</small></div></div>
+            
+            <div class="col-4">
+                <div class="card card-menu card-menu-input" onclick="bukaInputKas()">
+                    <div class="icon-size">
+                        <svg width="34" height="34" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M54 32 H65 V18 H76 L59 3 L42 18 H54 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
+                            <path d="M46 68 H35 V82 H24 L41 97 L58 82 H46 Z" fill="#54C7FF" stroke="#000000" stroke-width="5" stroke-linejoin="round"/>
+                            <rect x="10" y="26" width="80" height="48" rx="5" fill="#8BE653" stroke="#000000" stroke-width="5"/>
+                            <path d="M19 32 C24 32 24 32 24 36 V64 C24 68 19 68 19 68 H81 C76 68 76 68 76 64 V36 C76 32 81 32 81 32 Z" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>
+                            <circle cx="50" cy="50" r="15" fill="#8BE653" stroke="#000000" stroke-width="5"/>
+                            <path d="M50 41 V59 M45 44 C45 44 47.5 42 50.5 42 C53.5 42 54.5 44.5 51.5 47.5 C48.5 50.5 45.5 51.5 48.5 54.5 C51.5 57.5 55 56.5 55 56.5" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <small>Input Kas</small>
+                </div>
+            </div>
+            
+            <div class="col-4"><div class="card card-menu" onclick="bukaInternal()"><div class="icon-size">💼</div><small>Admin Sekr</small></div></div>
+        </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Ayah / Orang Tua (Bpk)</label>
-        <input type="text" id="inputAyah" value="Sukardi" oninput="updateCard()">
-      </div>
-      <div class="form-group">
-        <label>Ibu</label>
-        <input type="text" id="inputIbu" value="Aisyah" oninput="updateCard()">
-      </div>
-    </div>
+        <hr class="my-3">
 
-    <div class="form-group">
-      <label>Alamat / Blok Rumah</label>
-      <input type="text" id="inputAlamat" value="Blok A2 No. 15" oninput="updateCard()">
-    </div>
+        <!-- SECTION: CEK IURAN -->
+        <div id="section-warga" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">🔎 CEK IURAN WARGA</h6>
+            <div class="input-group mb-3">
+                <input type="text" id="inputBlok" class="form-control" placeholder="Ketik Blok (Contoh: A2 NO 23)">
+                <button class="btn btn-primary fw-bold" onclick="cariRiwayat()">CARI</button>
+            </div>
+            <div id="hasil-pencarian" style="display:none;">
+                <div class="table-responsive">
+                    <table class="table mb-0 text-center small">
+                        <tbody id="tabel-riwayat"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <!-- PREVIEW CARD DUKA CITA -->
-    <div class="card-preview-container">
-      <img id="cardPreview" alt="Preview Kartu Duka Cita RT05">
-    </div>
+        <!-- SECTION: KAS RT -->
+        <div id="section-kas" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">💰 LAPORAN KAS RT</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
+                <small class="text-muted fw-bold">SALDO AKHIR</small>
+                <h3 class="fw-bold text-primary mt-1" id="total-saldo">Rp 0</h3>
+            </div>
+            <div id="list-kas" class="table-responsive p-3">
+                <p class="text-center text-muted">Memuat data...</p>
+            </div>
+        </div>
 
-    <div class="btn-group">
-      <button class="btn btn-blue" onclick="downloadCard()">
-        📥 Download Gambar
-      </button>
-      <button class="btn btn-green" onclick="shareWhatsApp()">
-        📲 Share WA
-      </button>
-    </div>
-  </div>
+        <!-- SECTION: KAS DANSOS -->
+        <div id="section-kas-dansos" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">🤝 LAPORAN KAS DANA SOSIAL (DANSOS)</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
+                <small class="text-muted fw-bold">SALDO AKHIR KAS DANSOS</small>
+                <h3 class="fw-bold text-success mt-1" id="total-saldo-dansos">Rp 0</h3>
+            </div>
+            <div id="list-kas-dansos" class="table-responsive p-3">
+                <p class="text-center text-muted">Memuat data kas dansos...</p>
+            </div>
+        </div>
 
-  <!-- ================= TAB 2: KAS RT & DANSOS ================= -->
-  <div id="tab-kas" class="tab-content">
-    <div class="data-card">
-      <h4>Saldo Kas Utama RT 05</h4>
-      <p id="saldoKas">Memuat data dari Google Sheets...</p>
-    </div>
-    <div class="data-card">
-      <h4>Saldo Kas Dansos (Dana Sosial)</h4>
-      <p id="saldoDansos">Memuat data dari Google Sheets...</p>
-    </div>
-    <div id="listTransaksiKas"></div>
-  </div>
+        <!-- SECTION: AGENDA -->
+        <div id="section-agenda" class="content-section active-section">
+            <h6 class="fw-bold text-primary mb-3">📅 Agenda Kegiatan</h6>
+            <div id="list-agenda"></div>
+        </div>
 
-  <!-- ================= TAB 3: CEK IURAN ================= -->
-  <div id="tab-iuran" class="tab-content">
-    <div class="form-group">
-      <label>Cari Blok / Nama Warga:</label>
-      <input type="text" id="searchIuran" placeholder="Contoh: A2 No. 15" onkeyup="filterIuran()">
-    </div>
-    <div id="listIuranWarga">
-      <p style="font-size:13px; color:#64748b;">Memuat data iuran...</p>
-    </div>
-  </div>
+        <!-- SECTION: SURAT -->
+        <div id="section-surat" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">📁 Bank Data & Arsip RT</h6>
+            <div id="list-surat" class="table-responsive p-3">
+                <p class="text-center text-muted">Memuat dokumen...</p>
+            </div>
+        </div>
 
-  <!-- ================= TAB 4: AGENDA ================= -->
-  <div id="tab-agenda" class="tab-content">
-    <div id="listAgenda">
-      <p style="font-size:13px; color:#64748b;">Memuat agenda kegiatan RT...</p>
-    </div>
-  </div>
+        <!-- SECTION: BUAT UCAPAN -->
+        <div id="section-ucapan" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">🖼️ PEMBUAT KARTU UCAPAN</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Pilih Jenis Ucapan</label>
+                    <select id="jenisUcapan" class="form-select form-select-sm fw-bold text-primary" onchange="switchTemaUcapan()">
+                        <option value="duka">🖤 Turut Berduka Cita</option>
+                        <option value="lahiran">👶 Ucapan Kelahiran (Melahirkan)</option>
+                    </select>
+                </div>
 
-</div>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold" id="labelFoto">Unggah Foto Almarhum/ah (Opsional)</label>
+                    <input type="file" id="inputFoto" class="form-control form-control-sm" accept="image/*" onchange="handleImageUpload(event)">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold" id="labelNama">Nama Almarhum / Almarhumah</label>
+                    <input type="text" id="namaMeninggal" class="form-control form-control-sm" value="Alm. Ibu Sutimi" oninput="generateCard()">
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label small fw-bold" id="labelBpk">Ayah / Orang Tua (Bpk)</label>
+                        <input type="text" id="namaBpk" class="form-control form-control-sm" value="Sukardi" oninput="generateCard()">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-bold" id="labelIbu">Ibu</label>
+                        <input type="text" id="namaIbu" class="form-control form-control-sm" value="Aisyah" oninput="generateCard()">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Alamat / Blok Rumah</label>
+                    <input type="text" id="alamatBlok" class="form-control form-control-sm" value="Blok A2 No. 15" oninput="generateCard()">
+                </div>
 
-<script>
-// =========================================================================
-// INTEGRASI GOOGLE SHEETS CSV (URL TETAP PERSIS SEPERTI SISTEM ANDA)
-// =========================================================================
-const CSV_URL_WARGA = "YOUR_SPREADSHEET_CSV_URL_WARGA";
-const CSV_URL_KAS   = "YOUR_SPREADSHEET_CSV_URL_KAS";
-const CSV_URL_AGENDA= "YOUR_SPREADSHEET_CSV_URL_AGENDA";
+                <div class="text-center my-2">
+                    <canvas id="cardCanvas" width="1000" height="700" style="width: 100%; max-width: 360px; border-radius: 12px; border: 1px solid #ddd;"></canvas>
+                </div>
 
-let databaseWarga = [];
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-primary btn-sm w-50 fw-bold" onclick="downloadImage()">📥 Download Gambar</button>
+                    <button class="btn btn-success btn-sm w-50 fw-bold" onclick="shareWhatsApp()">📲 Share WA</button>
+                </div>
+            </div>
+        </div>
 
-// Load data saat halaman dibuka
-window.onload = function() {
-  updateCard();
-  fetchSpreadsheetData();
-};
+        <!-- SECTION: INPUT KAS -->
+        <div id="section-input-kas" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">➕ INPUT TRANSAKSI KAS</h6>
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <form id="formKeuangan" onsubmit="simpanKas(event)">
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Tanggal</label>
+                        <input type="date" id="inputTanggal" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Jenis Kas / Transaksi</label>
+                        <select id="inputJenis" class="form-select form-select-sm" required>
+                            <option value="Pemasukan Kas RT">Pemasukan Kas RT</option>
+                            <option value="Pengeluaran Kas RT">Pengeluaran Kas RT</option>
+                            <option value="Pemasukan Kas Dansos">Pemasukan Kas Dansos</option>
+                            <option value="Pengeluaran Kas Dansos">Pengeluaran Kas Dansos</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Keterangan / Keperluan</label>
+                        <input type="text" id="inputKeterangan" class="form-control form-control-sm" placeholder="Contoh: Iuran Bpk Ahmad / Beli Lampu" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nominal (Rp)</label>
+                        <input type="number" id="inputNominal" class="form-control form-control-sm" placeholder="Contoh: 50000" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-sm fw-bold">Simpan ke Google Sheets</button>
+                </form>
+                <p id="statusInput" class="text-center small mt-2 fw-bold"></p>
+            </div>
+        </div>
 
-// Pindah Tab Menu
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        <!-- SECTION: SARAN -->
+        <div id="section-saran" class="content-section">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScitJ8ETSNOci1Ool2Qs9GggIbfr3N4Mm9_hg4WmsrKdwtWvQ/viewform?embedded=true" width="100%" height="600" frameborder="0">Memuat…</iframe>
+        </div>
 
-  event.target.classList.add('active');
-  document.getElementById('tab-' + tabName).classList.add('active');
-}
+        <!-- SECTION: ADMIN SEKRETARIAT -->
+        <div id="section-internal" class="content-section">
+            <h6 class="fw-bold text-primary mb-3 text-center">💼 ADMIN SEKRETARIAT RT 05</h6>
+            <div class="d-flex justify-content-center gap-2 mb-3">
+                <button class="btn btn-outline-primary sub-tab-btn active" onclick="switchAdminTab('tab-db-warga', this)">👥 Data Warga</button>
+                <button class="btn btn-outline-primary sub-tab-btn" onclick="switchAdminTab('tab-surat-penting', this)">📄 Surat Penting</button>
+            </div>
+            <div id="tab-db-warga" class="admin-sub-content">
+                <div class="table-responsive">
+                    <table class="table table-sm small">
+                        <thead class="table-dark"><tr id="header-db"></tr></thead>
+                        <tbody id="body-db"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="tab-surat-penting" class="admin-sub-content" style="display:none;">
+                <div id="list-surat-penting" class="table-responsive p-3">
+                    <p class="text-center text-muted">Memuat berkas rahasia & surat penting...</p>
+                </div>
+            </div>
+        </div>
+    </main>
 
-// Fetch Data Spreadsheet CSV
-function fetchSpreadsheetData() {
-  // Parsing Agenda (Running Text & Tab Agenda)
-  if(CSV_URL_AGENDA && !CSV_URL_AGENDA.includes("YOUR_")) {
-    fetch(CSV_URL_AGENDA)
-      .then(res => res.text())
-      .then(csvText => {
-        const rows = parseCSV(csvText);
-        if(rows.length > 1) {
-          let agendaText = rows.slice(1).map(r => `🗓️ ${r[0] || ''}: ${r[1] || ''}`).join("  |  ");
-          document.getElementById('runningText').innerText = agendaText;
+    <script>
+        const PIN_ADMIN = "1234";
+        const REK_BCA = "5955097731";
+        const AN_REK = "Sumantri";
+
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/GANTI_DENGAN_ID_SCRIPT_ANDA/exec";
+
+        const urlAgenda = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTY2vbscjBXedI52clP0cA__fz99qB_Rrs7lIjUR-Ta_splDevu8mEZf6Bof2aDGwjx2RP6XMaRkrlQ/pub?output=csv";
+        const urlKas = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9IzJn8M1Emu0_LC4TY_cQik462FybKxEKgB9RaleHVqtOSXV17l1q_DTg2WG_a3DM2VYEzNEaKCI6/pub?gid=0&single=true&output=csv";
+        const urlSurat = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIWCVJPnol6BmfzfrmVo3Dx7ucnA1j9iuQBQmzjTVFsRr-GiJ7injvHvlvHkbq_aykB-G6GA8JVnir/pub?output=csv";
+        const urlWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT06nXtSsC_BB1RnsPRFTJyp9Nq7tqSkpN0GKVvtXLWIdewFJBMoCENViQWeN-Rw4DXqNCvQlHJswq7/pub?gid=0&single=true&output=csv";
+        const urlDatabaseWarga = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZ08pVNKL0IHTm8U7Ar79dJwFdqxh8kCZnVjhTzzeew7a4DdIKHLggTdWVGAnpXsX4VdGUz7LNj2cL/pub?gid=0&single=true&output=csv";
+        const urlKasDansos = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9Z423Kht4DVS_4buGSK9WzCfUrHcBoxmGXAhIPI8Y4Z0ZCrY5aAGCUPa7CpPGSs7odrkxtcudiHRI/pub?output=csv"; 
+        const urlSuratPenting = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS93WBkMrAZJRFe6vZ80gBPJdicaUtzeciWkww4N5IwxuHLKX6aZ-FYu_miLkK-7QnE8SxtPsbJ6KZj/pub?output=csv";
+
+        let uploadedImage = null;
+        
+        let bgDukaImg = new Image();
+        bgDukaImg.src = 'bg_duka.jpg';
+        bgDukaImg.onload = function() { generateCard(); };
+
+        let bgLahiranImg = new Image();
+        bgLahiranImg.src = 'bg_lahiran.jpg';
+        bgLahiranImg.onload = function() { generateCard(); };
+
+        // NAVIGASI GLOBAL
+        window.showSection = function(id) {
+            try {
+                document.querySelectorAll('.content-section').forEach(s => {
+                    s.classList.remove('active-section');
+                    s.style.display = 'none';
+                });
+                let target = document.getElementById(id);
+                if (target) {
+                    target.classList.add('active-section');
+                    target.style.display = 'block';
+                    if (id === 'section-ucapan') generateCard();
+                }
+            } catch (e) {
+                console.error("Error pada showSection:", e);
+            }
+        };
+
+        window.bukaInputKas = function() {
+            let pin = prompt("Masukkan PIN Petugas Input Kas:");
+            if (pin === PIN_ADMIN) {
+                window.showSection('section-input-kas');
+            } else if (pin !== null) {
+                alert("PIN Salah!");
+            }
+        };
+
+        window.bukaInternal = function() {
+            let pin = prompt("Masukkan PIN Admin Sekretariat:");
+            if (pin === PIN_ADMIN) {
+                window.showSection('section-internal');
+                loadDatabaseWarga();
+                loadSuratPenting();
+            } else if (pin !== null) {
+                alert("PIN Salah!");
+            }
+        };
+
+        window.switchAdminTab = function(tabId, btnElement) {
+            document.querySelectorAll('.admin-sub-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            btnElement.classList.add('active');
+        };
+
+        // PARSER CSV Sederhana
+        function parseCSV(text) {
+            let lines = text.split('\n');
+            return lines.map(line => {
+                let values = [];
+                let insideQuote = false;
+                let value = '';
+                for (let i = 0; i < line.length; i++) {
+                    let char = line[i];
+                    if (char === '"') {
+                        insideQuote = !insideQuote;
+                    } else if (char === ',' && !insideQuote) {
+                        values.push(value.trim().replace(/^"|"$/g, ''));
+                        value = '';
+                    } else {
+                        value += char;
+                    }
+                }
+                values.push(value.trim().replace(/^"|"$/g, ''));
+                return values;
+            });
         }
-      }).catch(err => console.log("Spreadsheet Agenda Info:", err));
-  } else {
-    document.getElementById('runningText').innerText = "📢 Agenda RT 05 Oleana Park: Pengurusan Administrasi & Surat Duka Cita Digital";
-  }
-}
 
-// Helper CSV Parser
-function parseCSV(text) {
-  return text.split('\n').map(row => row.split(','));
-}
+        // LOAD DATA AUTOMATIC
+        async function loadAgenda() {
+            try {
+                const res = await fetch(urlAgenda);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 3 && data[i][0]) {
+                        html += `
+                        <div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-white">
+                            <h6 class="fw-bold text-primary m-0">${data[i][0]}</h6>
+                            <small class="text-muted d-block my-1">📍 ${data[i][1]}</small>
+                            <p class="small text-secondary mb-0">${data[i][2]}</p>
+                        </div>`;
+                    }
+                }
+                document.getElementById('list-agenda').innerHTML = html || '<p class="text-center text-muted">Belum ada agenda.</p>';
+            } catch (e) {
+                document.getElementById('list-agenda').innerHTML = '<p class="text-center text-danger">Gagal memuat agenda.</p>';
+            }
+        }
 
-// Auto-fill dari pilihan dropdown warga
-function autoFillWarga(idx) {
-  if(idx === "" || !databaseWarga[idx]) return;
-  const w = databaseWarga[idx];
-  if(w.ayah) document.getElementById('inputAyah').value = w.ayah;
-  if(w.ibu) document.getElementById('inputIbu').value = w.ibu;
-  if(w.alamat) document.getElementById('inputAlamat').value = w.alamat;
-  updateCard();
-}
+        async function loadKas() {
+            try {
+                const res = await fetch(urlKas);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                let saldo = 0;
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 4 && data[i][0]) {
+                        let tgl = data[i][0];
+                        let ket = data[i][1];
+                        let masuk = parseInt(data[i][2].replace(/[^0-9]/g, '')) || 0;
+                        let keluar = parseInt(data[i][3].replace(/[^0-9]/g, '')) || 0;
+                        saldo += (masuk - keluar);
 
-// =========================================================================
-// CANVAS GENERATOR KARTU DUKA CITA (FUNGSI TERBARU SESUAI PERMINTAAN)
-// =========================================================================
-function generateDukaCitaCard(data) {
-  const canvas = document.createElement('canvas');
-  
-  // 1. Ketinggian Canvas ditingkatkan ke 980px agar area bawah lega
-  canvas.width = 1200;
-  canvas.height = 980;
+                        html += `
+                        <div class="kas-item">
+                            <div>
+                                <small class="text-muted d-block">${tgl}</small>
+                                <strong class="small">${ket}</strong>
+                            </div>
+                            <div class="text-end">
+                                ${masuk > 0 ? `<span class="text-pemasukan">+Rp ${masuk.toLocaleString('id-ID')}</span>` : ''}
+                                ${keluar > 0 ? `<span class="text-pengeluaran">-Rp ${keluar.toLocaleString('id-ID')}</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                }
+                document.getElementById('total-saldo').innerText = 'Rp ' + saldo.toLocaleString('id-ID');
+                document.getElementById('list-kas').innerHTML = html || '<p class="text-center text-muted">Data kas kosong.</p>';
+            } catch (e) {
+                document.getElementById('list-kas').innerHTML = '<p class="text-center text-danger">Gagal memuat kas.</p>';
+            }
+        }
 
-  const ctx = canvas.getContext('2d');
-  const centerX = canvas.width / 2;
+        async function loadKasDansos() {
+            try {
+                const res = await fetch(urlKasDansos);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                let saldo = 0;
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 4 && data[i][0]) {
+                        let tgl = data[i][0];
+                        let ket = data[i][1];
+                        let masuk = parseInt(data[i][2].replace(/[^0-9]/g, '')) || 0;
+                        let keluar = parseInt(data[i][3].replace(/[^0-9]/g, '')) || 0;
+                        saldo += (masuk - keluar);
 
-  // Background
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        html += `
+                        <div class="kas-item">
+                            <div>
+                                <small class="text-muted d-block">${tgl}</small>
+                                <strong class="small">${ket}</strong>
+                            </div>
+                            <div class="text-end">
+                                ${masuk > 0 ? `<span class="text-pemasukan">+Rp ${masuk.toLocaleString('id-ID')}</span>` : ''}
+                                ${keluar > 0 ? `<span class="text-pengeluaran">-Rp ${keluar.toLocaleString('id-ID')}</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                }
+                document.getElementById('total-saldo-dansos').innerText = 'Rp ' + saldo.toLocaleString('id-ID');
+                document.getElementById('list-kas-dansos').innerHTML = html || '<p class="text-center text-muted">Data kas dansos kosong.</p>';
+            } catch (e) {
+                document.getElementById('list-kas-dansos').innerHTML = '<p class="text-center text-danger">Gagal memuat kas dansos.</p>';
+            }
+        }
 
-  // Bingkai Luar
-  ctx.strokeStyle = '#cbd5e1';
-  ctx.lineWidth = 10;
-  ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+        async function loadSurat() {
+            try {
+                const res = await fetch(urlSurat);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 2 && data[i][0]) {
+                        html += `
+                        <div class="surat-item">
+                            <span class="small fw-bold">${data[i][0]}</span>
+                            <a href="${data[i][1]}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold" style="font-size:11px;">Buka Link</a>
+                        </div>`;
+                    }
+                }
+                document.getElementById('list-surat').innerHTML = html || '<p class="text-center text-muted">Belum ada berkas.</p>';
+            } catch (e) {
+                document.getElementById('list-surat').innerHTML = '<p class="text-center text-danger">Gagal memuat berkas.</p>';
+            }
+        }
 
-  // Header Pita Hijau
-  ctx.fillStyle = '#1b4332';
-  ctx.beginPath();
-  ctx.moveTo(120, 70);
-  ctx.lineTo(1080, 70);
-  ctx.lineTo(1020, 155);
-  ctx.lineTo(180, 155);
-  ctx.closePath();
-  ctx.fill();
+        async function loadDatabaseWarga() {
+            try {
+                const res = await fetch(urlDatabaseWarga);
+                const text = await res.text();
+                const data = parseCSV(text);
+                if(data.length > 0) {
+                    let headHtml = '';
+                    data[0].forEach(h => headHtml += `<th>${h}</th>`);
+                    document.getElementById('header-db').innerHTML = headHtml;
 
-  // Teks Header "TURUT BERDUKA CITA"
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 54px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('TURUT BERDUKA CITA', centerX, 130);
+                    let bodyHtml = '';
+                    for(let i=1; i<data.length; i++) {
+                        if(data[i].join('')) {
+                            bodyHtml += '<tr>';
+                            data[i].forEach(c => bodyHtml += `<td>${c}</td>`);
+                            bodyHtml += '</tr>';
+                        }
+                    }
+                    document.getElementById('body-db').innerHTML = bodyHtml;
+                }
+            } catch (e) {
+                document.getElementById('body-db').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Gagal memuat database warga.</td></tr>';
+            }
+        }
 
-  // Sub-header "ATAS MENINGGALNYA"
-  ctx.fillStyle = '#2d6a4f';
-  ctx.font = 'bold 32px Arial, sans-serif';
-  ctx.fillText('- ATAS MENINGGALNYA -', centerX, 215);
+        async function loadSuratPenting() {
+            try {
+                const res = await fetch(urlSuratPenting);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 2 && data[i][0]) {
+                        html += `
+                        <div class="surat-item">
+                            <span class="small fw-bold">${data[i][0]}</span>
+                            <a href="${data[i][1]}" target="_blank" class="btn btn-sm btn-outline-danger fw-bold" style="font-size:11px;">Akses Rahasia</a>
+                        </div>`;
+                    }
+                }
+                document.getElementById('list-surat-penting').innerHTML = html || '<p class="text-center text-muted">Belum ada surat penting.</p>';
+            } catch (e) {
+                document.getElementById('list-surat-penting').innerHTML = '<p class="text-center text-danger">Gagal memuat surat penting.</p>';
+            }
+        }
 
-  // Lingkaran Emas & Nama Almarhum
-  const centerY = 375;
-  const radius = 135;
+        async function cariRiwayat() {
+            let input = document.getElementById('inputBlok').value.trim().toUpperCase();
+            if (!input) { alert("Ketikkan nomor blok!"); return; }
 
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-  ctx.lineWidth = 14;
-  ctx.strokeStyle = '#d4af37';
-  ctx.stroke();
+            try {
+                const res = await fetch(urlWarga);
+                const text = await res.text();
+                const data = parseCSV(text);
+                
+                let found = false;
+                let html = '';
+                
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i][0] && data[i][0].toUpperCase().includes(input)) {
+                        found = true;
+                        let headers = data[0];
+                        html += `<tr class="table-primary"><th colspan="2">${data[i][0]} - ${data[i][1] || ''}</th></tr>`;
+                        for (let j = 2; j < data[i].length; j++) {
+                            let status = data[i][j] ? data[i][j].toUpperCase() : 'BELUM';
+                            let classStatus = (status === 'LUNAS' || status === 'OK') ? 'status-ok' : 'status-wait';
+                            html += `
+                            <tr>
+                                <td class="text-start">${headers[j] || 'Bulan ' + (j-1)}</td>
+                                <td class="text-end"><span class="${classStatus}">${status}</span></td>
+                            </tr>`;
+                        }
+                    }
+                }
+                if (!found) {
+                    html = '<tr><td class="text-center text-danger">Data tidak ditemukan. Format penulisan contoh: A2 NO 23</td></tr>';
+                }
+                document.getElementById('tabel-riwayat').innerHTML = html;
+                document.getElementById('hasil-pencarian').style.display = 'block';
+            } catch (e) {
+                alert("Gagal membaca data iuran warga.");
+            }
+        }
 
-  // Nama Almarhum/ah (Besar & Jelas)
-  ctx.fillStyle = '#111827';
-  ctx.font = 'bold 52px Arial, sans-serif';
-  ctx.fillText(data.namaAlmarhum || 'Alm. Ibu Sutimi', centerX, centerY + 18);
+        // FUNGSI PEMBUAT KARTU UCAPAN (CANVAS)
+        function switchTemaUcapan() {
+            let jenis = document.getElementById('jenisUcapan').value;
+            if (jenis === 'duka') {
+                document.getElementById('labelFoto').innerText = 'Unggah Foto Almarhum/ah (Opsional)';
+                document.getElementById('labelNama').innerText = 'Nama Almarhum / Almarhumah';
+                document.getElementById('labelBpk').innerText = 'Ayah / Orang Tua (Bpk)';
+                document.getElementById('labelIbu').innerText = 'Ibu';
+            } else {
+                document.getElementById('labelFoto').innerText = 'Unggah Foto Bayi (Opsional)';
+                document.getElementById('labelNama').innerText = 'Nama Bayi';
+                document.getElementById('labelBpk').innerText = 'Nama Ayah';
+                document.getElementById('labelIbu').innerText = 'Nama Ibu';
+            }
+            generateCard();
+        }
 
-  // Area Pita Emas (Orang Tua & Alamat - DIPERBESAR & MULTI-BARIS)
-  const ribbonY = 560;
-  const ribbonWidth = 940;
-  const ribbonHeight = 160;
+        function handleImageUpload(e) {
+            let file = e.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImage = new Image();
+                    uploadedImage.onload = function() { generateCard(); };
+                    uploadedImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
-  ctx.fillStyle = '#d4af37';
-  ctx.fillRect(centerX - (ribbonWidth / 2), ribbonY, ribbonWidth, ribbonHeight);
+        function generateCard() {
+            let canvas = document.getElementById('cardCanvas');
+            let ctx = canvas.getContext('2d');
+            let jenis = document.getElementById('jenisUcapan').value;
 
-  ctx.strokeStyle = '#b38f2a';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(centerX - (ribbonWidth / 2), ribbonY, ribbonWidth, ribbonHeight);
+            let nama = document.getElementById('namaMeninggal').value;
+            let bpk = document.getElementById('namaBpk').value;
+            let ibu = document.getElementById('namaIbu').value;
+            let alamat = document.getElementById('alamatBlok').value;
 
-  // Baris 1: Teks Orang Tua (Diperbesar ke 36px Bold)
-  ctx.fillStyle = '#0f172a';
-  ctx.font = 'bold 36px Arial, sans-serif';
-  const teksOrangTua = `Orang Tua dari Bpk ${data.namaAyah || 'Sukardi'} & Ibu ${data.namaIbu || 'Aisyah'}`;
-  ctx.fillText(teksOrangTua, centerX, ribbonY + 62);
+            let bg = (jenis === 'duka') ? bgDukaImg : bgLahiranImg;
 
-  // Baris 2: Alamat / Blok Rumah (Diperbesar ke 32px Bold)
-  ctx.font = 'bold 32px Arial, sans-serif';
-  ctx.fillStyle = '#1e293b';
-  const teksAlamat = `(${data.alamat || 'Blok A2 No. 15'} Oleana Park)`;
-  ctx.fillText(teksAlamat, centerX, ribbonY + 118);
+            if (bg.complete && bg.naturalWidth !== 0) {
+                ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = (jenis === 'duka') ? '#222' : '#e3f2fd';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
 
-  // Footer Pengurus RT
-  const footerY = 770;
-  const footerHeight = 150;
+            // GAMBAR FOTO
+            if (uploadedImage) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(500, 220, 90, 0, Math.PI * 2, true);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(uploadedImage, 410, 130, 180, 180);
+                ctx.restore();
 
-  ctx.fillStyle = '#1b4332';
-  ctx.fillRect(50, footerY, canvas.width - 100, footerHeight);
+                ctx.beginPath();
+                ctx.arc(500, 220, 90, 0, Math.PI * 2, true);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = (jenis === 'duka') ? '#D4AF37' : '#0d6efd';
+                ctx.stroke();
+            }
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 40px Arial, sans-serif';
-  ctx.fillText('KETUA RT05', centerX, footerY + 60);
+            // TEKS DESAIN
+            ctx.textAlign = 'center';
+            if (jenis === 'duka') {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 38px "Playfair Display", serif';
+                ctx.fillText(nama, 500, 430);
 
-  ctx.font = 'bold 34px Arial, sans-serif';
-  ctx.fillText('& JAJARAN PENGURUS RT05 RW18', centerX, footerY + 115);
+                ctx.fillStyle = '#D4AF37';
+                ctx.font = '24px "Inter", sans-serif';
+                ctx.fillText(`Keluarga Bpk. ${bpk} / Ibu ${ibu}`, 500, 480);
+                ctx.fillText(`(${alamat})`, 500, 520);
+            } else {
+                ctx.fillStyle = '#0d6efd';
+                ctx.font = 'bold 38px "Playfair Display", serif';
+                ctx.fillText(nama, 500, 430);
 
-  return canvas.toDataURL('image/png');
-}
+                ctx.fillStyle = '#333333';
+                ctx.font = '24px "Inter", sans-serif';
+                ctx.fillText(`Putra/Putri dari Bpk. ${bpk} & Ibu ${ibu}`, 500, 480);
+                ctx.fillText(`Alamat: ${alamat}`, 500, 520);
+            }
+        }
 
-// Trigger Perubahan Live Preview
-function updateCard() {
-  const data = {
-    namaAlmarhum: document.getElementById('inputAlmarhum').value,
-    namaAyah: document.getElementById('inputAyah').value,
-    namaIbu: document.getElementById('inputIbu').value,
-    alamat: document.getElementById('inputAlamat').value
-  };
+        function downloadImage() {
+            let canvas = document.getElementById('cardCanvas');
+            let link = document.createElement('a');
+            link.download = 'ucapan-rt05.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
 
-  const imgBase64 = generateDukaCitaCard(data);
-  document.getElementById('cardPreview').src = imgBase64;
-}
+        function shareWhatsApp() {
+            let nama = document.getElementById('namaMeninggal').value;
+            let jenis = document.getElementById('jenisUcapan').value;
+            let pesan = (jenis === 'duka') ? 
+                `*TURUT BERDUKA CITA - RT 05 OLEANA PARK*\nInnalillahi wa inna ilaihi raji'un. Telah berpulang ke rahmatullah: *${nama}*.\nSemoga almarhum/ah husnul khotimah.` :
+                `*UCAPAN SELAMAT KELAHIRAN - RT 05 OLEANA PARK*\nSelamat atas kelahiran putra/putri dari *${nama}*.\nSemoga menjadi anak yang soleh/solehah dan berbakti.`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, '_blank');
+        }
 
-// Download Gambar Card
-function downloadCard() {
-  const imgSrc = document.getElementById('cardPreview').src;
-  if (!imgSrc) return;
+        // SIMPAN TRANSAKSI KAS VIA GOOGLE APPS SCRIPT
+        async function simpanKas(e) {
+            e.preventDefault();
+            let status = document.getElementById('statusInput');
+            status.className = 'text-center small mt-2 fw-bold text-warning';
+            status.innerText = 'Mengirim data...';
 
-  const link = document.createElement('a');
-  link.download = 'Ucapan_Duka_Cita_RT05.png';
-  link.href = imgSrc;
-  link.click();
-}
+            let payload = {
+                tanggal: document.getElementById('inputTanggal').value,
+                jenis: document.getElementById('inputJenis').value,
+                keterangan: document.getElementById('inputKeterangan').value,
+                nominal: document.getElementById('inputNominal').value
+            };
 
-// Share Format Pesan WA
-function shareWhatsApp() {
-  const almarhum = document.getElementById('inputAlmarhum').value;
-  const ayah = document.getElementById('inputAyah').value;
-  const ibu = document.getElementById('inputIbu').value;
-  const alamat = document.getElementById('inputAlamat').value;
+            try {
+                await fetch(URL_APPS_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                status.className = 'text-center small mt-2 fw-bold text-success';
+                status.innerText = 'Berhasil disimpan! Silakan muat ulang halaman.';
+                document.getElementById('formKeuangan').reset();
+            } catch (err) {
+                status.className = 'text-center small mt-2 fw-bold text-danger';
+                status.innerText = 'Gagal menyimpan transaksi.';
+            }
+        }
 
-  const text = `*Innalillahi wa inna ilaihi raji'un*\n\nTurut berduka cita atas meninggalnya:\n*${almarhum}*\n(Orang Tua dari Bpk ${ayah} & Ibu ${ibu})\nAlamat: ${alamat} Oleana Park.\n\n_Semoga almarhum/ah husnul khotimah dan keluarga yang ditinggalkan diberikan ketabahan. Aamiin._\n\n- *Pengurus RT 05 / RW 18 Oleana Park*`;
-
-  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
-}
-</script>
-
+        // INIT SAAT HALAMAN DIBUKA
+        window.onload = function() {
+            loadAgenda();
+            loadKas();
+            loadKasDansos();
+            loadSurat();
+        };
+    </script>
 </body>
 </html>
