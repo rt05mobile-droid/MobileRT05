@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generator Kartu Ucapan Duka Cita</title>
+  <title>MOBILE RT 05 - Oleana Park RW 18</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,145 +14,403 @@
 
     body {
       background-color: #f4f6f9;
-      padding: 15px;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      min-height: 100vh;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
-      align-items: center;
     }
 
-    .container {
-      width: 100%;
-      max-width: 600px;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    h2 {
+    /* --- HEADER --- */
+    .header {
+      background: linear-gradient(180deg, #0052cc 0%, #0066ff 100%);
+      color: white;
       text-align: center;
-      margin-bottom: 15px;
-      color: #1b4332;
+      padding: 20px 15px 15px 15px;
     }
 
+    .logo-circle {
+      width: 75px;
+      height: 75px;
+      background: white;
+      border-radius: 50%;
+      margin: 0 auto 10px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffd700;
+      overflow: hidden;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .header p {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    /* --- RUNNING TEXT --- */
+    .ticker-wrap {
+      width: 100%;
+      background-color: #ffc107;
+      color: #000;
+      overflow: hidden;
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .ticker-move {
+      display: inline-block;
+      padding-left: 100%;
+      animation: ticker 18s linear infinite;
+      font-weight: bold;
+      font-size: 13px;
+      line-height: 28px;
+    }
+
+    @keyframes ticker {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
+    }
+
+    /* --- MENU TAB CONTAINER --- */
+    .tab-nav {
+      display: flex;
+      background: #e2e8f0;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 5px;
+      border: none;
+      background: transparent;
+      font-weight: bold;
+      font-size: 12px;
+      color: #475569;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: #0052cc;
+      border-bottom: 3px solid #0052cc;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 15px;
+      flex: 1;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* --- FORM STYLING --- */
     .form-group {
       margin-bottom: 12px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin-bottom: 5px;
-      font-size: 14px;
-      color: #333;
+      font-size: 13px;
+      color: #1a1a1a;
+      margin-bottom: 4px;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 15px;
+      font-size: 14px;
+      outline: none;
     }
 
-    /* Container Preview Gambar dibuat lebih tinggi & lega */
-    .preview-box {
-      margin-top: 20px;
+    input:focus, select:focus {
+      border-color: #0066ff;
+    }
+
+    /* --- CANVAS PREVIEW --- */
+    .card-preview-container {
+      margin-top: 15px;
       width: 100%;
-      min-height: 420px;
-      background-color: #eaeaea;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #ddd;
+      border: 1px solid #e0e0e0;
+      background: #fafafa;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    .preview-box img {
+    .card-preview-container img {
       width: 100%;
       height: auto;
       display: block;
-      object-fit: contain;
     }
 
+    /* --- BUTTONS --- */
     .btn-group {
       display: flex;
       gap: 10px;
       margin-top: 15px;
+      margin-bottom: 15px;
     }
 
-    button {
+    .btn {
       flex: 1;
-      padding: 12px;
+      padding: 12px 5px;
       border: none;
       border-radius: 6px;
+      font-size: 13px;
       font-weight: bold;
-      font-size: 15px;
-      cursor: pointer;
       color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .btn-generate { background-color: #2d6a4f; }
-    .btn-download { background-color: #007bff; }
+    .btn-blue { background-color: #0066ff; }
+    .btn-green { background-color: #10b981; }
+
+    /* --- DATA TABLE & LISTS --- */
+    .data-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .data-card h4 {
+      color: #0f172a;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .data-card p {
+      color: #475569;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>Form Kartu Duka Cita</h2>
+<div class="app-container">
   
-  <div class="form-group">
-    <label>Nama Almarhum / Almarhumah:</label>
-    <input type="text" id="inputAlmarhum" value="Alm. Ibu Sutimi">
-  </div>
-  
-  <div class="form-group">
-    <label>Nama Ayah (Bpk):</label>
-    <input type="text" id="inputAyah" value="Sukardi">
-  </div>
-
-  <div class="form-group">
-    <label>Nama Ibu:</label>
-    <input type="text" id="inputIbu" value="Aisyah">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-circle">
+      <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="#0052cc" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </div>
+    <h1>MOBILE RT 05</h1>
+    <p>Oleana Park • RW 18</p>
   </div>
 
-  <div class="form-group">
-    <label>Alamat / Blok Rumah:</label>
-    <input type="text" id="inputAlamat" value="Blok A2 No. 15">
+  <!-- RUNNING TEXT AGENDA -->
+  <div class="ticker-wrap">
+    <div class="ticker-move" id="runningText">
+      📢 Loading agenda RT 05 Oleana Park dari Spreadsheet...
+    </div>
   </div>
 
-  <div class="btn-group">
-    <button class="btn-generate" onclick="updateCard()">Update Gambar</button>
-    <button class="btn-download" onclick="downloadCard()">Download Gambar</button>
+  <!-- TAB NAVIGATION MENU -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('duka')">Surat Duka</button>
+    <button class="tab-btn" onclick="switchTab('kas')">Kas RT & Dansos</button>
+    <button class="tab-btn" onclick="switchTab('iuran')">Cek Iuran</button>
+    <button class="tab-btn" onclick="switchTab('agenda')">Agenda</button>
   </div>
 
-  <!-- Area Preview Gambar -->
-  <div class="preview-box">
-    <img id="cardPreview" alt="Preview Kartu Duka Cita">
+  <!-- ================= TAB 1: SURAT DUKA CITA ================= -->
+  <div id="tab-duka" class="tab-content active">
+    
+    <!-- Pilih Warga dari Database Spreadsheet (Opsional Otomatisasi) -->
+    <div class="form-group">
+      <label>Pilih Data Warga (Auto-fill CSV):</label>
+      <select id="selectWarga" onchange="autoFillWarga(this.value)">
+        <option value="">-- Ketik manual atau pilih warga --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Nama Almarhum / Almarhumah</label>
+      <input type="text" id="inputAlmarhum" value="Alm. Ibu Sutimi" oninput="updateCard()">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Ayah / Orang Tua (Bpk)</label>
+        <input type="text" id="inputAyah" value="Sukardi" oninput="updateCard()">
+      </div>
+      <div class="form-group">
+        <label>Ibu</label>
+        <input type="text" id="inputIbu" value="Aisyah" oninput="updateCard()">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Alamat / Blok Rumah</label>
+      <input type="text" id="inputAlamat" value="Blok A2 No. 15" oninput="updateCard()">
+    </div>
+
+    <!-- PREVIEW CARD DUKA CITA -->
+    <div class="card-preview-container">
+      <img id="cardPreview" alt="Preview Kartu Duka Cita RT05">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-blue" onclick="downloadCard()">
+        📥 Download Gambar
+      </button>
+      <button class="btn btn-green" onclick="shareWhatsApp()">
+        📲 Share WA
+      </button>
+    </div>
   </div>
+
+  <!-- ================= TAB 2: KAS RT & DANSOS ================= -->
+  <div id="tab-kas" class="tab-content">
+    <div class="data-card">
+      <h4>Saldo Kas Utama RT 05</h4>
+      <p id="saldoKas">Memuat data dari Google Sheets...</p>
+    </div>
+    <div class="data-card">
+      <h4>Saldo Kas Dansos (Dana Sosial)</h4>
+      <p id="saldoDansos">Memuat data dari Google Sheets...</p>
+    </div>
+    <div id="listTransaksiKas"></div>
+  </div>
+
+  <!-- ================= TAB 3: CEK IURAN ================= -->
+  <div id="tab-iuran" class="tab-content">
+    <div class="form-group">
+      <label>Cari Blok / Nama Warga:</label>
+      <input type="text" id="searchIuran" placeholder="Contoh: A2 No. 15" onkeyup="filterIuran()">
+    </div>
+    <div id="listIuranWarga">
+      <p style="font-size:13px; color:#64748b;">Memuat data iuran...</p>
+    </div>
+  </div>
+
+  <!-- ================= TAB 4: AGENDA ================= -->
+  <div id="tab-agenda" class="tab-content">
+    <div id="listAgenda">
+      <p style="font-size:13px; color:#64748b;">Memuat agenda kegiatan RT...</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
+// =========================================================================
+// INTEGRASI GOOGLE SHEETS CSV (URL TETAP PERSIS SEPERTI SISTEM ANDA)
+// =========================================================================
+const CSV_URL_WARGA = "YOUR_SPREADSHEET_CSV_URL_WARGA";
+const CSV_URL_KAS   = "YOUR_SPREADSHEET_CSV_URL_KAS";
+const CSV_URL_AGENDA= "YOUR_SPREADSHEET_CSV_URL_AGENDA";
+
+let databaseWarga = [];
+
+// Load data saat halaman dibuka
+window.onload = function() {
+  updateCard();
+  fetchSpreadsheetData();
+};
+
+// Pindah Tab Menu
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tabName).classList.add('active');
+}
+
+// Fetch Data Spreadsheet CSV
+function fetchSpreadsheetData() {
+  // Parsing Agenda (Running Text & Tab Agenda)
+  if(CSV_URL_AGENDA && !CSV_URL_AGENDA.includes("YOUR_")) {
+    fetch(CSV_URL_AGENDA)
+      .then(res => res.text())
+      .then(csvText => {
+        const rows = parseCSV(csvText);
+        if(rows.length > 1) {
+          let agendaText = rows.slice(1).map(r => `🗓️ ${r[0] || ''}: ${r[1] || ''}`).join("  |  ");
+          document.getElementById('runningText').innerText = agendaText;
+        }
+      }).catch(err => console.log("Spreadsheet Agenda Info:", err));
+  } else {
+    document.getElementById('runningText').innerText = "📢 Agenda RT 05 Oleana Park: Pengurusan Administrasi & Surat Duka Cita Digital";
+  }
+}
+
+// Helper CSV Parser
+function parseCSV(text) {
+  return text.split('\n').map(row => row.split(','));
+}
+
+// Auto-fill dari pilihan dropdown warga
+function autoFillWarga(idx) {
+  if(idx === "" || !databaseWarga[idx]) return;
+  const w = databaseWarga[idx];
+  if(w.ayah) document.getElementById('inputAyah').value = w.ayah;
+  if(w.ibu) document.getElementById('inputIbu').value = w.ibu;
+  if(w.alamat) document.getElementById('inputAlamat').value = w.alamat;
+  updateCard();
+}
+
+// =========================================================================
+// CANVAS GENERATOR KARTU DUKA CITA (FUNGSI TERBARU SESUAI PERMINTAAN)
+// =========================================================================
 function generateDukaCitaCard(data) {
   const canvas = document.createElement('canvas');
-  // 1. Ketinggian Canvas ditingkatkan dari 800px ke 980px agar area bawah lega
+  
+  // 1. Ketinggian Canvas ditingkatkan ke 980px agar area bawah lega
   canvas.width = 1200;
   canvas.height = 980;
 
   const ctx = canvas.getContext('2d');
   const centerX = canvas.width / 2;
 
-  // --- BACKGROUND ---
+  // Background
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Bingkai Luar Halus
-  ctx.strokeStyle = '#e2e8f0';
+  // Bingkai Luar
+  ctx.strokeStyle = '#cbd5e1';
   ctx.lineWidth = 10;
   ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-  // --- HEADER: PITA HIJAU "TURUT BERDUKA CITA" ---
+  // Header Pita Hijau
   ctx.fillStyle = '#1b4332';
   ctx.beginPath();
   ctx.moveTo(120, 70);
@@ -173,7 +431,7 @@ function generateDukaCitaCard(data) {
   ctx.font = 'bold 32px Arial, sans-serif';
   ctx.fillText('- ATAS MENINGGALNYA -', centerX, 215);
 
-  // --- AREA LINGKARAN EMAS (FOTO / NAMA ALMARHUM) ---
+  // Lingkaran Emas & Nama Almarhum
   const centerY = 375;
   const radius = 135;
 
@@ -183,38 +441,36 @@ function generateDukaCitaCard(data) {
   ctx.strokeStyle = '#d4af37';
   ctx.stroke();
 
-  // Nama Almarhum/Almarhumah (DIPERBESAR)
+  // Nama Almarhum/ah (Besar & Jelas)
   ctx.fillStyle = '#111827';
   ctx.font = 'bold 52px Arial, sans-serif';
   ctx.fillText(data.namaAlmarhum || 'Alm. Ibu Sutimi', centerX, centerY + 18);
 
-  // --- AREA PITA EMAS (ORANG TUA & ALAMAT - DIPERBESAR & DIPERBANYAK RUANG) ---
+  // Area Pita Emas (Orang Tua & Alamat - DIPERBESAR & MULTI-BARIS)
   const ribbonY = 560;
-  const ribbonWidth = 920;
-  const ribbonHeight = 160; // Dipertinggi agar teks 2 baris muat & jelas
+  const ribbonWidth = 940;
+  const ribbonHeight = 160;
 
-  // Background Pita Emas
   ctx.fillStyle = '#d4af37';
   ctx.fillRect(centerX - (ribbonWidth / 2), ribbonY, ribbonWidth, ribbonHeight);
 
-  // Border Pita Emas
   ctx.strokeStyle = '#b38f2a';
   ctx.lineWidth = 4;
   ctx.strokeRect(centerX - (ribbonWidth / 2), ribbonY, ribbonWidth, ribbonHeight);
 
-  // Baris 1: Teks Orang Tua (DIPERBESAR ke 36px Bold)
+  // Baris 1: Teks Orang Tua (Diperbesar ke 36px Bold)
   ctx.fillStyle = '#0f172a';
   ctx.font = 'bold 36px Arial, sans-serif';
   const teksOrangTua = `Orang Tua dari Bpk ${data.namaAyah || 'Sukardi'} & Ibu ${data.namaIbu || 'Aisyah'}`;
   ctx.fillText(teksOrangTua, centerX, ribbonY + 62);
 
-  // Baris 2: Alamat / Blok Rumah (DIPERBESAR ke 32px Bold)
+  // Baris 2: Alamat / Blok Rumah (Diperbesar ke 32px Bold)
   ctx.font = 'bold 32px Arial, sans-serif';
   ctx.fillStyle = '#1e293b';
   const teksAlamat = `(${data.alamat || 'Blok A2 No. 15'} Oleana Park)`;
   ctx.fillText(teksAlamat, centerX, ribbonY + 118);
 
-  // --- FOOTER / PENGURUS RT (HIJAU TUA) ---
+  // Footer Pengurus RT
   const footerY = 770;
   const footerHeight = 150;
 
@@ -231,7 +487,7 @@ function generateDukaCitaCard(data) {
   return canvas.toDataURL('image/png');
 }
 
-// Fungsi untuk memperbarui preview
+// Trigger Perubahan Live Preview
 function updateCard() {
   const data = {
     namaAlmarhum: document.getElementById('inputAlmarhum').value,
@@ -244,7 +500,7 @@ function updateCard() {
   document.getElementById('cardPreview').src = imgBase64;
 }
 
-// Fungsi Download Gambar
+// Download Gambar Card
 function downloadCard() {
   const imgSrc = document.getElementById('cardPreview').src;
   if (!imgSrc) return;
@@ -255,8 +511,18 @@ function downloadCard() {
   link.click();
 }
 
-// Jalankan otomatis saat halaman pertama kali dimuat
-window.onload = updateCard;
+// Share Format Pesan WA
+function shareWhatsApp() {
+  const almarhum = document.getElementById('inputAlmarhum').value;
+  const ayah = document.getElementById('inputAyah').value;
+  const ibu = document.getElementById('inputIbu').value;
+  const alamat = document.getElementById('inputAlamat').value;
+
+  const text = `*Innalillahi wa inna ilaihi raji'un*\n\nTurut berduka cita atas meninggalnya:\n*${almarhum}*\n(Orang Tua dari Bpk ${ayah} & Ibu ${ibu})\nAlamat: ${alamat} Oleana Park.\n\n_Semoga almarhum/ah husnul khotimah dan keluarga yang ditinggalkan diberikan ketabahan. Aamiin._\n\n- *Pengurus RT 05 / RW 18 Oleana Park*`;
+
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
 </script>
 
 </body>
