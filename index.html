@@ -592,64 +592,128 @@
             }
         }
 
-        function generateCard() {
-            let canvas = document.getElementById('cardCanvas');
-            let ctx = canvas.getContext('2d');
-            let jenis = document.getElementById('jenisUcapan').value;
+       function generateCard() {
+    let canvas = document.getElementById('cardCanvas');
+    let ctx = canvas.getContext('2d');
+    let jenis = document.getElementById('jenisUcapan').value;
 
-            let nama = document.getElementById('namaMeninggal').value;
-            let bpk = document.getElementById('namaBpk').value;
-            let ibu = document.getElementById('namaIbu').value;
-            let alamat = document.getElementById('alamatBlok').value;
+    let nama = document.getElementById('namaMeninggal').value || '';
+    let bpk = document.getElementById('namaBpk').value || '';
+    let ibu = document.getElementById('namaIbu').value || '';
+    let alamat = document.getElementById('alamatBlok').value || '';
 
-            let bg = (jenis === 'duka') ? bgDukaImg : bgLahiranImg;
+    let bg = (jenis === 'duka') ? bgDukaImg : bgLahiranImg;
 
-            if (bg.complete && bg.naturalWidth !== 0) {
-                ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+    // Clean Canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 1. Render Background Template
+    if (bg.complete && bg.naturalWidth !== 0) {
+        ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.fillStyle = (jenis === 'duka') ? '#ffffff' : '#fff9e6';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // 2. DESAIN KARTU DUKA (Foto Diturunkan, Teks Hitam Pekat)
+    if (jenis === 'duka') {
+        // Foto Duka (X=500, Y=370, Radius=115)
+        if (uploadedImage) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(500, 370, 115, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+
+            let aspect = uploadedImage.width / uploadedImage.height;
+            let drawWidth = 230;
+            let drawHeight = 230;
+            if (aspect > 1) {
+                drawWidth = 230 * aspect;
             } else {
-                ctx.fillStyle = (jenis === 'duka') ? '#222' : '#e3f2fd';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                drawHeight = 230 / aspect;
             }
+            let drawX = 500 - (drawWidth / 2);
+            let drawY = 370 - (drawHeight / 2);
 
-            // GAMBAR FOTO
-            if (uploadedImage) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(500, 220, 90, 0, Math.PI * 2, true);
-                ctx.closePath();
-                ctx.clip();
-                ctx.drawImage(uploadedImage, 410, 130, 180, 180);
-                ctx.restore();
+            ctx.drawImage(uploadedImage, drawX, drawY, drawWidth, drawHeight);
+            ctx.restore();
 
-                ctx.beginPath();
-                ctx.arc(500, 220, 90, 0, Math.PI * 2, true);
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = (jenis === 'duka') ? '#D4AF37' : '#0d6efd';
-                ctx.stroke();
-            }
-
-            // TEKS DESAIN
-            ctx.textAlign = 'center';
-            if (jenis === 'duka') {
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 38px "Playfair Display", serif';
-                ctx.fillText(nama, 500, 430);
-
-                ctx.fillStyle = '#D4AF37';
-                ctx.font = '24px "Inter", sans-serif';
-                ctx.fillText(`Keluarga Bpk. ${bpk} / Ibu ${ibu}`, 500, 480);
-                ctx.fillText(`(${alamat})`, 500, 520);
-            } else {
-                ctx.fillStyle = '#0d6efd';
-                ctx.font = 'bold 38px "Playfair Display", serif';
-                ctx.fillText(nama, 500, 430);
-
-                ctx.fillStyle = '#333333';
-                ctx.font = '24px "Inter", sans-serif';
-                ctx.fillText(`Putra/Putri dari Bpk. ${bpk} & Ibu ${ibu}`, 500, 480);
-                ctx.fillText(`Alamat: ${alamat}`, 500, 520);
-            }
+            // Bingkai Ring Gold
+            ctx.beginPath();
+            ctx.arc(500, 370, 115, 0, Math.PI * 2, true);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#D4AF37';
+            ctx.stroke();
         }
+
+        // Teks Nama Almarhum/ah (Warna Hitam Pekat, Font 42px, Y=525)
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#111111';
+        ctx.font = 'bold 42px "Playfair Display", serif';
+        ctx.fillText(nama, 500, 525);
+
+        // Teks Orang Tua / Keluarga (Hijau Tua, Y=565)
+        ctx.fillStyle = '#1e5e3a';
+        ctx.font = '600 24px "Inter", sans-serif';
+        ctx.fillText(`Keluarga Bpk. ${bpk} / Ibu ${ibu}`, 500, 565);
+
+        // Teks Alamat (Y=595)
+        ctx.fillStyle = '#444444';
+        ctx.font = '500 20px "Inter", sans-serif';
+        ctx.fillText(`(${alamat})`, 500, 595);
+    } 
+    // 3. DESAIN KARTU LAHIRAN (Foto di Kiri X=300, Teks di Kanan X=650)
+    else {
+        // Foto Lahiran (X=300, Y=310, Radius=110)
+        if (uploadedImage) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(300, 310, 110, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+
+            let aspect = uploadedImage.width / uploadedImage.height;
+            let drawWidth = 220;
+            let drawHeight = 220;
+            if (aspect > 1) {
+                drawWidth = 220 * aspect;
+            } else {
+                drawHeight = 220 / aspect;
+            }
+            let drawX = 300 - (drawWidth / 2);
+            let drawY = 310 - (drawHeight / 2);
+
+            ctx.drawImage(uploadedImage, drawX, drawY, drawWidth, drawHeight);
+            ctx.restore();
+
+            // Bingkai Ring Putih
+            ctx.beginPath();
+            ctx.arc(300, 310, 110, 0, Math.PI * 2, true);
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+        }
+
+        // Teks Lahiran (Samping Kanan Foto, X=650)
+        ctx.textAlign = 'center';
+
+        // Nama Bayi (Biru, Font 40px, Y=270)
+        ctx.fillStyle = '#0d6efd';
+        ctx.font = 'bold 40px "Playfair Display", serif';
+        ctx.fillText(nama, 650, 270);
+
+        // Teks Orang Tua (Hitam, Font 24px, Y=315)
+        ctx.fillStyle = '#222222';
+        ctx.font = '600 24px "Inter", sans-serif';
+        ctx.fillText(`Putra/Putri dari Bpk. ${bpk} & Ibu ${ibu}`, 650, 315);
+
+        // Teks Alamat (Font 22px, Y=350)
+        ctx.fillStyle = '#444444';
+        ctx.font = '500 22px "Inter", sans-serif';
+        ctx.fillText(`Alamat: ${alamat}`, 650, 350);
+    }
+}
 
         function downloadImage() {
             let canvas = document.getElementById('cardCanvas');
