@@ -503,11 +503,11 @@
             if (jenis === 'lahiran') {
                 document.getElementById('labelFoto').innerText = "Unggah Foto Bayi (Opsional)";
                 document.getElementById('labelNama').innerText = "Nama Bayi / Anak";
-                document.getElementById('namaMeninggal').value = "Muhammad Azka";
+                document.getElementById('namaMeninggal').value = "Muhammad AABBXX";
             } else {
                 document.getElementById('labelFoto').innerText = "Unggah Foto Almarhum/ah (Opsional)";
                 document.getElementById('labelNama').innerText = "Nama Almarhum / Almarhumah";
-                document.getElementById('namaMeninggal').value = "Alm. Ibu Sutimi";
+                document.getElementById('namaMeninggal').value = "Alm. Ibu AABBXX";
             }
             generateCard();
         };
@@ -650,13 +650,24 @@
             link.click();
         };
 
-       window.shareWhatsApp = function() {
-        let jenis = document.getElementById('jenisUcapan') ? document.getElementById('jenisUcapan').value : 'lahiran';
-        let nama = document.getElementById('namaMeninggal') ? document.getElementById('namaMeninggal').value : '';
-        let bpk = document.getElementById('namaBpk') ? document.getElementById('namaBpk').value : '';
-        let ibu = document.getElementById('namaIbu') ? document.getElementById('namaIbu').value : '';
-        let alamat = document.getElementById('alamatBlok') ? document.getElementById('alamatBlok').value : 'Oleana Park';
-        let katDuka = document.getElementById('kategoriDuka') ? document.getElementById('kategoriDuka').value : 'muslim';
+      window.shareWhatsApp = function() {
+        let jenisEl = document.getElementById('jenisUcapan');
+        let jenis = jenisEl ? jenisEl.value : 'lahiran';
+
+        let namaEl = document.getElementById('namaMeninggal');
+        let nama = namaEl ? namaEl.value.trim() : '';
+
+        let bpkEl = document.getElementById('namaBpk');
+        let bpk = bpkEl ? bpkEl.value.trim() : '';
+
+        let ibuEl = document.getElementById('namaIbu');
+        let ibu = ibuEl ? ibuEl.value.trim() : '';
+
+        let alamatEl = document.getElementById('alamatBlok');
+        let alamat = alamatEl ? alamatEl.value.trim() : 'Oleana Park';
+
+        let katDukaEl = document.getElementById('kategoriDuka');
+        let katDuka = katDukaEl ? katDukaEl.value : 'muslim';
 
         let teks = "";
 
@@ -669,21 +680,24 @@
 
             teks = `📢 *INFORMASI KELAHIRAN WARGA RT 05*\n\nAssalamu'alaikum Wr. Wb.\n\nAlhamdulillah, telah lahir dengan selamat putra/putri dari keluarga *${ortuText}* (${alamat}).\n\nSemoga menjadi anak yang taat pada orang tua, cerdas, dan membawa keberkahan bagi keluarga. Aamiin.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
         } else {
-            // Gabungkan nama warga (anak/keluarga yang ditinggalkan)
+            // Duka Cita
             let wargaText = "";
             if (bpk && ibu) wargaText = `Bpk ${bpk} & Ibu ${ibu}`;
             else if (bpk) wargaText = `Bpk ${bpk}`;
             else if (ibu) wargaText = `Ibu ${ibu}`;
 
             if (katDuka === 'nasrani') {
-                teks = `📢 *UCAPAN BELASUNGKAWA*\n\nKetua RT 05 RW 18 beserta jajaran pengurus menyampaikan turut berduka cita yang mendalam atas wafatnya orang tua dari warga kami: *${nama}*\n\n*Nama Warga :* ${wargaText}\n*Alamat :* ${alamat}\n\nSemoga almarhum/almarhumah mendapatkan tempat terbaik dan keluarga yang ditinggalkan diberikan ketabahan, kesabaran, serta kekuatan.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
+                // Teks Duka Cita Nasrani / Umum
+                teks = `📢 *UCAPAN BELASUNGKAWA*\n\nKetua RT 05 RW 18 beserta jajaran pengurus menyampaikan turut berduka cita yang mendalam atas wafatnya orang tua dari warga kami:\n\n*Nama Almarhum/ah :* ${nama}\n*Keluarga / Duka :* ${wargaText}\n*Alamat :* ${alamat}\n\nSemoga almarhum/almarhumah mendapatkan tempat terbaik dan keluarga yang ditinggalkan diberikan ketabahan, kesabaran, serta kekuatan.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
             } else {
-                teks = `📢 *UCAPAN BELASUNGKAWA*\n\n_*Innalillahi wa inna ilaihi raji'un*_\n\nKetua RT 05 RW 18 beserta jajaran pengurus menyampaikan turut berduka cita yang sedalam-dalamnya atas wafatnya orang tua dari warga kami: *${nama}*\n\n*Nama Warga :* ${wargaText}\n*Alamat :* ${alamat}\n\nSemoga Almarhum/Almarhumah mendapatkan tempat terbaik di sisi Allah SWT, diampuni segala dosa dan khilafnya, diterima amal ibadahnya, serta keluarga yang ditinggalkan diberikan ketabahan, kesabaran, dan kekuatan dalam menghadapi musibah ini.\n\nAamiin Yaa Rabbal 'Alamiin.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
+                // Teks Duka Cita Muslim
+                teks = `📢 *UCAPAN BELASUNGKAWA*\n\n_*Innalillahi wa inna ilaihi raji'un*_\n\nKetua RT 05 RW 18 beserta jajaran pengurus menyampaikan turut berduka cita yang sedalam-dalamnya atas wafatnya orang tua dari warga kami:\n\n*Nama Almarhum/ah :* ${nama}\n*Keluarga / Duka :* ${wargaText}\n*Alamat :* ${alamat}\n\nSemoga Almarhum/Almarhumah mendapatkan tempat terbaik di sisi Allah SWT, diampuni segala dosa dan khilafnya, diterima amal ibadahnya, serta keluarga yang ditinggalkan diberikan ketabahan, kesabaran, dan kekuatan.\n\nAamiin Yaa Rabbal 'Alamiin.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
             }
         }
 
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
     };
+       
         window.addEventListener('DOMContentLoaded', function() {
             loadAgenda();
             loadKasRT();
