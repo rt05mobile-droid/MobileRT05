@@ -651,19 +651,26 @@
         };
 
         window.shareWhatsApp = function() {
-            let jenis = document.getElementById('jenisUcapan').value;
-            let nama = document.getElementById('namaMeninggal').value;
-            let teks = "";
+        let jenis = document.getElementById('jenisUcapan').value;
+        let nama = document.getElementById('namaMeninggal').value;
+        let alamat = document.getElementById('alamatBlok').value || "Oleana Park";
+        let katDuka = document.getElementById('kategoriDuka') ? document.getElementById('kategoriDuka').value : 'muslim';
+        let teks = "";
 
-            if (jenis === 'lahiran') {
-                teks = `Selamat atas kelahiran putra/putri dari keluarga *${nama}*! 👶\nSemoga menjadi anak yang soleh/solehah dan membawa keberkahan.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+        if (jenis === 'lahiran') {
+            teks = `*📢 UCAPAN KELAHIRAN WARGA RT 05*\n\nSelamat atas kelahiran putra/putri dari keluarga *${nama}*! 👶\n\nSemoga menjadi anak yang taat pada orang tua, soleh/solehah, dan membawa keberkahan bagi keluarga.\n\n_Pengurus & Warga RT 05 Oleana Park_`;
+        } else {
+            if (katDuka === 'nasrani') {
+                // VERSI NASRANI
+                teks = `*📢 UCAPAN BELASUNGKAWA*\n\nDengan rasa duka yang mendalam, Ketua RT 05 RW 18 beserta jajaran pengurus menyampaikan turut berbelasungkawa atas berpulangnya orang tua dari warga kami:\n\n*Nama Warga :* ${nama}\n*Alamat :* ${alamat}\n\nSemoga almarhum/almarhumah beristirahat dalam damai dan memperoleh tempat yang mulia di sisi Tuhan Yang Maha Esa. Kiranya keluarga yang ditinggalkan diberikan kekuatan, ketabahan, penghiburan, dan pengharapan dalam menghadapi masa duka ini.\n\nAtas nama seluruh warga dan pengurus, kami turut mendoakan serta menyampaikan simpati yang tulus kepada keluarga yang berduka.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
             } else {
-                teks = `Innalillahi wa inna ilaihi raji'un.\n\nTelah berpulang ke Rahmatullah *${nama}*.\nSemoga Husnul Khotimah.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+                // VERSI MUSLIM
+                teks = `*📢 UCAPAN BELASUNGKAWA*\n\n_*Innalillahi wa inna ilaihi raji'un*_\n\nKetua RT 05 RW 18 beserta jajaran pengurus menyampaikan turut berduka cita yang sedalam-dalamnya atas wafatnya orang tua dari warga kami:\n\n*Nama Warga :* ${nama}\n*Alamat :* ${alamat}\n\nSemoga Almarhum/Almarhumah mendapatkan tempat terbaik di sisi Allah SWT, diampuni segala dosa dan khilafnya, diterima amal ibadahnya, serta keluarga yang ditinggalkan diberikan ketabahan, kesabaran, dan kekuatan dalam menghadapi musibah ini.\n\nAamiin Yaa Rabbal 'Alamiin.\n\nHormat kami,\n*WARSONI SUCIPTO*\nKetua RT 05 RW 18\nBeserta Jajaran Pengurus`;
             }
+        }
 
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
-        };
-
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
+    };
         window.addEventListener('DOMContentLoaded', function() {
             loadAgenda();
             loadKasRT();
