@@ -583,45 +583,38 @@
             let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
             let nama = document.getElementById('namaMeninggal').value || "Nama";
 
-           if (tema === 'kelahiran') {
-            // --- TEMA KELAHIRAN (45PX & SERTIFIKASI AMAN) ---
-            let startX = 660; // Titik tengah teks di area kanan
+          if (tema === 'kelahiran') {
+            // --- TEMA KELAHIRAN (UTUH & AMAN) ---
+            let startX = 660; // Titik tengah area kanan
 
-            // 1. Nama Anak (45px Bold)
+            // 1. Nama Anak (Ukuran 45px)
             let startY = 390;
             ctx.fillStyle = "#1d4ed8";
             ctx.font = "bold 45px 'Playfair Display', serif";
             ctx.fillText(nama || "", startX, startY);
 
-            // 2. Label "Putra/Putri dari:" (Baris Pertama)
+            // 2. Teks Orang Tua
             startY = 450;
             ctx.fillStyle = "#2b2b2b";
-            ctx.font = "500 18px 'Inter', sans-serif";
-            if (bpk || ibu) {
-                ctx.fillText("Putra/Putri dari:", startX, startY);
-            }
-
-            // 3. Nama Orang Tua (Baris Kedua)
-            startY += 28;
-            ctx.font = "bold 20px 'Inter', sans-serif";
-            let namaOrtu = "";
+            ctx.font = "600 20px 'Inter', sans-serif";
+            let ortuText = "";
             if (bpk && ibu) {
-                namaOrtu = `Bpk ${bpk} & Ibu ${ibu}`;
+                ortuText = "Putra/Putri dari Bpk " + bpk + " & Ibu " + ibu;
             } else if (bpk) {
-                namaOrtu = `Bpk ${bpk}`;
+                ortuText = "Anak dari Bpk " + bpk;
             } else if (ibu) {
-                namaOrtu = `Ibu ${ibu}`;
+                ortuText = "Anak dari Ibu " + ibu;
             }
-            if (namaOrtu) {
-                ctx.fillText(namaOrtu, startX, startY);
+            if (ortuText) {
+                ctx.fillText(ortuText, startX, startY);
             }
 
-            // 4. Alamat (Baris Ketiga)
-            startY += 30;
-            ctx.fillStyle = "#555555";
-            ctx.font = "500 16px 'Inter', sans-serif";
+            // 3. Alamat
+            startY += 32;
+            ctx.fillStyle = "#444444";
+            ctx.font = "500 18px 'Inter', sans-serif";
             if (alamat) {
-                ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
+                ctx.fillText("(" + alamat + " - Oleana Park)", startX, startY);
             }
 
         } else {
