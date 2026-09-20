@@ -583,38 +583,46 @@
             let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
             let nama = document.getElementById('namaMeninggal').value || "Nama";
 
-            if (tema === 'kelahiran') {
-            // --- TEMA KELAHIRAN (NAMA 45PX & POSISI DINAIKKAN) ---
+           if (tema === 'kelahiran') {
+            // --- TEMA KELAHIRAN (45PX & SERTIFIKASI AMAN) ---
             let startX = 660; // Titik tengah teks di area kanan
 
-            // 1. Nama Anak (Diperbesar ke 45px & Posisinya Dinaikkan ke 390)
-            let startY = 390; 
+            // 1. Nama Anak (45px Bold)
+            let startY = 390;
             ctx.fillStyle = "#1d4ed8";
             ctx.font = "bold 45px 'Playfair Display', serif";
-            ctx.fillText(nama, startX, startY);
+            ctx.fillText(nama || "", startX, startY);
 
             // 2. Label "Putra/Putri dari:" (Baris Pertama)
             startY = 450;
             ctx.fillStyle = "#2b2b2b";
             ctx.font = "500 18px 'Inter', sans-serif";
-            let labelOrtu = "";
-            if (bpk || ibu) labelOrtu = "Putra/Putri dari:";
-            if (labelOrtu) ctx.fillText(labelOrtu, startX, startY);
+            if (bpk || ibu) {
+                ctx.fillText("Putra/Putri dari:", startX, startY);
+            }
 
-            // 3. Nama Orang Tua "Bpk Sukardi & Ibu Aisyah" (Baris Kedua)
+            // 3. Nama Orang Tua (Baris Kedua)
             startY += 28;
             ctx.font = "bold 20px 'Inter', sans-serif";
             let namaOrtu = "";
-            if (bpk && ibu) namaOrtu = `Bpk ${bpk} & Ibu ${ibu}`;
-            else if (bpk) namaOrtu = `Bpk ${bpk}`;
-            else if (ibu) namaOrtu = `Ibu ${ibu}`;
-            if (namaOrtu) ctx.fillText(namaOrtu, startX, startY);
+            if (bpk && ibu) {
+                namaOrtu = `Bpk ${bpk} & Ibu ${ibu}`;
+            } else if (bpk) {
+                namaOrtu = `Bpk ${bpk}`;
+            } else if (ibu) {
+                namaOrtu = `Ibu ${ibu}`;
+            }
+            if (namaOrtu) {
+                ctx.fillText(namaOrtu, startX, startY);
+            }
 
             // 4. Alamat (Baris Ketiga)
             startY += 30;
             ctx.fillStyle = "#555555";
             ctx.font = "500 16px 'Inter', sans-serif";
-            ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
+            if (alamat) {
+                ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
+            }
 
         } else {
             // --- TEMA DUKA CITA (NAMA ALMARHUM/AH 30PX) ---
