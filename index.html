@@ -616,9 +616,9 @@
             ctx.fillText(nama, startX, startY);
 
             // B. Keterangan Keluarga (Jarak disesuaikan ke 525)
-            startY = 525;
+            startY = 515;
             ctx.fillStyle = "#2b2b2b";
-            ctx.font = "600 16px 'Inter', sans-serif";
+            ctx.font = "600 25px 'Inter', sans-serif";
             let ortuText = "";
             if (bpk && ibu) ortuText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
             else if (bpk) ortuText = `Orang Tua dari Bpk ${bpk}`;
@@ -626,9 +626,9 @@
             if (ortuText) ctx.fillText(ortuText, startX, startY);
 
             // C. Alamat
-            startY += 25;
+            startY += 30;
             ctx.fillStyle = "#555555";
-            ctx.font = "500 14px 'Inter', sans-serif";
+            ctx.font = "500 20px 'Inter', sans-serif";
             ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
         }
     };
