@@ -215,7 +215,7 @@
         <div id="section-input-kas" class="content-section">
             <h6 class="fw-bold text-primary mb-3 text-center">➕ INPUT TRANSAKSI KAS</h6>
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <form id="formKeuangan">
+                <form id="formKeuangan" onsubmit="simpanKas(event)">
                     <div class="mb-2">
                         <label class="form-label small fw-bold">Tanggal</label>
                         <input type="date" id="inputTanggal" class="form-control form-control-sm" required>
@@ -288,7 +288,6 @@
 
         let uploadedImage = null;
         
-        // PANGGILAN BACKGROUND CANVA (bg_duka.jpg & bg_lahiran.jpg)
         let bgDukaImg = new Image();
         bgDukaImg.src = 'bg_duka.jpg';
         bgDukaImg.onload = function() { generateCard(); };
@@ -342,379 +341,371 @@
             btnElement.classList.add('active');
         };
 
-        async function fetchCSV(url) {
-            try {
-                const response = await fetch(url + '&t=' + new Date().getTime());
-                if (!response.ok) throw new Error("Gagal mengambil data");
-                const data = await response.text();
-                return data.split("\n").filter(row => row.trim() !== "").map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
-            } catch (e) { 
-                return []; 
-            }
-        }
-
-        function formatRupiah(angka) {
-            return "Rp " + Math.abs(parseInt(angka) || 0).toLocaleString('id-ID');
-        }
-
-        window.cariRiwayat = async function() {
-            let inputRaw = document.getElementById('inputBlok').value;
-            let inputBersih = inputRaw.toUpperCase().trim().replace(/[^A-Z0-9]/g, "");
-            if(!inputBersih) return alert("Ketik nomor blok!");
-
-            const dW = await fetchCSV(urlWarga);
-            if(dW.length === 0) return alert("Gagal memuat data warga dari koneksi internet.");
-
-            let html = ""; let found = false; let header = dW[0]; let namaWarga = "";
-
-            for (let i = 0; i < dW.length; i++) {
-                let cellBlok = (dW[i][0] || "").replace(/[^A-Z0-9]/g, "").toUpperCase();
-                if (cellBlok === inputBersih) {
-                    found = true;
-                    namaWarga = dW[i][1] ? dW[i][1].replace(/"/g,'').trim() : "Warga RT 05";
-                    for(let j = 2; j < dW[i].length; j++) {
-                        let status = dW[i][j] ? dW[i][j].replace(/"/g,'').trim() : "";
-                        if (status !== "") {
-                            let css = status.toLowerCase().includes('lunas') ? 'status-ok' : 'status-wait';
-                            html += `<tr><td class="fw-bold">${header[j] ? header[j].replace(/"/g,'') : ''}</td><td><span class="${css}">${status}</span></td></tr>`;
-                        }
+        // PARSER CSV Sederhana
+        function parseCSV(text) {
+            let lines = text.split('\n');
+            return lines.map(line => {
+                let values = [];
+                let insideQuote = false;
+                let value = '';
+                for (let i = 0; i < line.length; i++) {
+                    let char = line[i];
+                    if (char === '"') {
+                        insideQuote = !insideQuote;
+                    } else if (char === ',' && !insideQuote) {
+                        values.push(value.trim().replace(/^"|"$/g, ''));
+                        value = '';
+                    } else {
+                        value += char;
                     }
-                    break;
                 }
-            }
+                values.push(value.trim().replace(/^"|"$/g, ''));
+                return values;
+            });
+        }
 
-            if(found) {
-                let infoRek = `<tr><td colspan="2" class="bg-light p-3 text-center border-top">
-                    <small class="text-muted d-block">Transfer Iuran ke Bendahara:</small>
-                    <b class="text-primary d-block">BCA ${REK_BCA}</b>
-                    <span class="badge bg-secondary">A/n ${AN_REK}</span>
-                </td></tr>`;
-                document.getElementById('tabel-riwayat').innerHTML = `<tr><th colspan="2" class="table-dark text-center" style="border-radius:10px 10px 0 0">${namaWarga}</th></tr>` + html + infoRek;
-                document.getElementById('hasil-pencarian').style.display = "block";
-            } else { alert("Data Blok tidak ditemukan!"); }
-        };
+        // LOAD DATA AUTOMATIC
+        async function loadAgenda() {
+            try {
+                const res = await fetch(urlAgenda);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 3 && data[i][0]) {
+                        html += `
+                        <div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-white">
+                            <h6 class="fw-bold text-primary m-0">${data[i][0]}</h6>
+                            <small class="text-muted d-block my-1">📍 ${data[i][1]}</small>
+                            <p class="small text-secondary mb-0">${data[i][2]}</p>
+                        </div>`;
+                    }
+                }
+                document.getElementById('list-agenda').innerHTML = html || '<p class="text-center text-muted">Belum ada agenda.</p>';
+            } catch (e) {
+                document.getElementById('list-agenda').innerHTML = '<p class="text-center text-danger">Gagal memuat agenda.</p>';
+            }
+        }
+
+        async function loadKas() {
+            try {
+                const res = await fetch(urlKas);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                let saldo = 0;
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 4 && data[i][0]) {
+                        let tgl = data[i][0];
+                        let ket = data[i][1];
+                        let masuk = parseInt(data[i][2].replace(/[^0-9]/g, '')) || 0;
+                        let keluar = parseInt(data[i][3].replace(/[^0-9]/g, '')) || 0;
+                        saldo += (masuk - keluar);
+
+                        html += `
+                        <div class="kas-item">
+                            <div>
+                                <small class="text-muted d-block">${tgl}</small>
+                                <strong class="small">${ket}</strong>
+                            </div>
+                            <div class="text-end">
+                                ${masuk > 0 ? `<span class="text-pemasukan">+Rp ${masuk.toLocaleString('id-ID')}</span>` : ''}
+                                ${keluar > 0 ? `<span class="text-pengeluaran">-Rp ${keluar.toLocaleString('id-ID')}</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                }
+                document.getElementById('total-saldo').innerText = 'Rp ' + saldo.toLocaleString('id-ID');
+                document.getElementById('list-kas').innerHTML = html || '<p class="text-center text-muted">Data kas kosong.</p>';
+            } catch (e) {
+                document.getElementById('list-kas').innerHTML = '<p class="text-center text-danger">Gagal memuat kas.</p>';
+            }
+        }
 
         async function loadKasDansos() {
             try {
-                const dK = await fetchCSV(urlKasDansos);
-                let total = 0; let htmlK = "";
-                if(dK.length > 1) {
-                    dK.slice(1).forEach(r => {
-                        if(r[1]) {
-                            let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
-                            total += nominal;
-                            let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
-                            htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0] ? r[0].replace(/"/g,'') : ''}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
-                        }
-                    });
+                const res = await fetch(urlKasDansos);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                let saldo = 0;
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 4 && data[i][0]) {
+                        let tgl = data[i][0];
+                        let ket = data[i][1];
+                        let masuk = parseInt(data[i][2].replace(/[^0-9]/g, '')) || 0;
+                        let keluar = parseInt(data[i][3].replace(/[^0-9]/g, '')) || 0;
+                        saldo += (masuk - keluar);
+
+                        html += `
+                        <div class="kas-item">
+                            <div>
+                                <small class="text-muted d-block">${tgl}</small>
+                                <strong class="small">${ket}</strong>
+                            </div>
+                            <div class="text-end">
+                                ${masuk > 0 ? `<span class="text-pemasukan">+Rp ${masuk.toLocaleString('id-ID')}</span>` : ''}
+                                ${keluar > 0 ? `<span class="text-pengeluaran">-Rp ${keluar.toLocaleString('id-ID')}</span>` : ''}
+                            </div>
+                        </div>`;
+                    }
                 }
-                document.getElementById('total-saldo-dansos').innerText = formatRupiah(total);
-                document.getElementById('list-kas-dansos').innerHTML = htmlK || '<p class="text-center text-muted">Belum ada transaksi.</p>';
-            } catch(err) {
+                document.getElementById('total-saldo-dansos').innerText = 'Rp ' + saldo.toLocaleString('id-ID');
+                document.getElementById('list-kas-dansos').innerHTML = html || '<p class="text-center text-muted">Data kas dansos kosong.</p>';
+            } catch (e) {
                 document.getElementById('list-kas-dansos').innerHTML = '<p class="text-center text-danger">Gagal memuat kas dansos.</p>';
-            }
-        }
-
-        async function loadKasRT() {
-            try {
-                const dK = await fetchCSV(urlKas);
-                let total = 0; let htmlK = "";
-                if(dK.length > 1) {
-                    dK.slice(1).forEach(r => {
-                        if(r[1]) {
-                            let nominal = parseInt(r[1].replace(/[^0-9-]/g, '')) || 0;
-                            total += nominal;
-                            let warna = nominal >= 0 ? 'text-pemasukan' : 'text-pengeluaran';
-                            htmlK += `<div class="kas-item"><div><small class="text-muted d-block">${r[2] || ''}</small><b>${r[0] ? r[0].replace(/"/g,'') : ''}</b></div><div class="${warna}">${nominal < 0 ? '-' : ''}${formatRupiah(nominal)}</div></div>`;
-                        }
-                    });
-                }
-                document.getElementById('total-saldo').innerText = formatRupiah(total);
-                document.getElementById('list-kas').innerHTML = htmlK || '<p class="text-center text-muted">Belum ada transaksi.</p>';
-            } catch(err) {
-                document.getElementById('list-kas').innerHTML = '<p class="text-center text-danger">Gagal memuat kas RT.</p>';
-            }
-        }
-
-        async function loadAgenda() {
-            try {
-                const dA = await fetchCSV(urlAgenda);
-                let htmlA = "";
-                if(dA.length > 1) {
-                    dA.slice(1).forEach(r => {
-                        if(r[0]) {
-                            htmlA += `<div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-white"><div class="d-flex justify-content-between align-items-center"><span class="badge bg-primary">${r[0]}</span><small class="text-muted">${r[1]||''}</small></div><h6 class="fw-bold mt-2 mb-1">${r[2]||''}</h6><small class="text-secondary">${r[3]||''}</small></div>`;
-                        }
-                    });
-                }
-                document.getElementById('list-agenda').innerHTML = htmlA || '<p class="text-center text-muted">Belum ada agenda.</p>';
-            } catch(err) {
-                document.getElementById('list-agenda').innerHTML = '<p class="text-center text-danger">Gagal memuat agenda.</p>';
             }
         }
 
         async function loadSurat() {
             try {
-                const dS = await fetchCSV(urlSurat);
-                let htmlS = "";
-                if(dS.length > 1) {
-                    dS.slice(1).forEach(r => {
-                        if(r[0]) {
-                            htmlS += `<div class="surat-item"><div><b>${r[0]}</b><small class="text-muted d-block">${r[1]||''}</small></div><a href="${r[2]}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">Unduh</a></div>`;
-                        }
-                    });
+                const res = await fetch(urlSurat);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 2 && data[i][0]) {
+                        html += `
+                        <div class="surat-item">
+                            <span class="small fw-bold">${data[i][0]}</span>
+                            <a href="${data[i][1]}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold" style="font-size:11px;">Buka Link</a>
+                        </div>`;
+                    }
                 }
-                document.getElementById('list-surat').innerHTML = htmlS || '<p class="text-center text-muted">Belum ada surat.</p>';
-            } catch(err) {
-                document.getElementById('list-surat').innerHTML = '<p class="text-center text-danger">Gagal memuat surat.</p>';
+                document.getElementById('list-surat').innerHTML = html || '<p class="text-center text-muted">Belum ada berkas.</p>';
+            } catch (e) {
+                document.getElementById('list-surat').innerHTML = '<p class="text-center text-danger">Gagal memuat berkas.</p>';
             }
         }
 
         async function loadDatabaseWarga() {
-            const dB = await fetchCSV(urlDatabaseWarga);
-            if(dB.length === 0) return;
-            let headerHtml = ""; dB[0].forEach(h => headerHtml += `<th>${h.replace(/"/g,'')}</th>`);
-            let bodyHtml = "";
-            dB.slice(1).forEach(r => {
-                bodyHtml += "<tr>";
-                r.forEach(c => bodyHtml += `<td>${c.replace(/"/g,'')}</td>`);
-                bodyHtml += "</tr>";
-            });
-            document.getElementById('header-db').innerHTML = headerHtml;
-            document.getElementById('body-db').innerHTML = bodyHtml;
+            try {
+                const res = await fetch(urlDatabaseWarga);
+                const text = await res.text();
+                const data = parseCSV(text);
+                if(data.length > 0) {
+                    let headHtml = '';
+                    data[0].forEach(h => headHtml += `<th>${h}</th>`);
+                    document.getElementById('header-db').innerHTML = headHtml;
+
+                    let bodyHtml = '';
+                    for(let i=1; i<data.length; i++) {
+                        if(data[i].join('')) {
+                            bodyHtml += '<tr>';
+                            data[i].forEach(c => bodyHtml += `<td>${c}</td>`);
+                            bodyHtml += '</tr>';
+                        }
+                    }
+                    document.getElementById('body-db').innerHTML = bodyHtml;
+                }
+            } catch (e) {
+                document.getElementById('body-db').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Gagal memuat database warga.</td></tr>';
+            }
         }
 
         async function loadSuratPenting() {
-            const dSP = await fetchCSV(urlSuratPenting);
-            let htmlSP = "";
-            if(dSP.length > 1) {
-                dSP.slice(1).forEach(r => {
-                    if(r[0]) {
-                        htmlSP += `<div class="surat-item"><div><b>${r[0]}</b><small class="text-muted d-block">${r[1]||''}</small></div><a href="${r[2]}" target="_blank" class="btn btn-sm btn-outline-danger fw-bold">Akses</a></div>`;
+            try {
+                const res = await fetch(urlSuratPenting);
+                const text = await res.text();
+                const data = parseCSV(text);
+                let html = '';
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i].length >= 2 && data[i][0]) {
+                        html += `
+                        <div class="surat-item">
+                            <span class="small fw-bold">${data[i][0]}</span>
+                            <a href="${data[i][1]}" target="_blank" class="btn btn-sm btn-outline-danger fw-bold" style="font-size:11px;">Akses Rahasia</a>
+                        </div>`;
                     }
-                });
+                }
+                document.getElementById('list-surat-penting').innerHTML = html || '<p class="text-center text-muted">Belum ada surat penting.</p>';
+            } catch (e) {
+                document.getElementById('list-surat-penting').innerHTML = '<p class="text-center text-danger">Gagal memuat surat penting.</p>';
             }
-            document.getElementById('list-surat-penting').innerHTML = htmlSP || '<p class="text-center text-muted">Belum ada berkas rahasia.</p>';
         }
 
-        // SWITCH TEMA UCAPAN
-        window.switchTemaUcapan = function() {
+        async function cariRiwayat() {
+            let input = document.getElementById('inputBlok').value.trim().toUpperCase();
+            if (!input) { alert("Ketikkan nomor blok!"); return; }
+
+            try {
+                const res = await fetch(urlWarga);
+                const text = await res.text();
+                const data = parseCSV(text);
+                
+                let found = false;
+                let html = '';
+                
+                for (let i = 1; i < data.length; i++) {
+                    if (data[i][0] && data[i][0].toUpperCase().includes(input)) {
+                        found = true;
+                        let headers = data[0];
+                        html += `<tr class="table-primary"><th colspan="2">${data[i][0]} - ${data[i][1] || ''}</th></tr>`;
+                        for (let j = 2; j < data[i].length; j++) {
+                            let status = data[i][j] ? data[i][j].toUpperCase() : 'BELUM';
+                            let classStatus = (status === 'LUNAS' || status === 'OK') ? 'status-ok' : 'status-wait';
+                            html += `
+                            <tr>
+                                <td class="text-start">${headers[j] || 'Bulan ' + (j-1)}</td>
+                                <td class="text-end"><span class="${classStatus}">${status}</span></td>
+                            </tr>`;
+                        }
+                    }
+                }
+                if (!found) {
+                    html = '<tr><td class="text-center text-danger">Data tidak ditemukan. Format penulisan contoh: A2 NO 23</td></tr>';
+                }
+                document.getElementById('tabel-riwayat').innerHTML = html;
+                document.getElementById('hasil-pencarian').style.display = 'block';
+            } catch (e) {
+                alert("Gagal membaca data iuran warga.");
+            }
+        }
+
+        // FUNGSI PEMBUAT KARTU UCAPAN (CANVAS)
+        function switchTemaUcapan() {
             let jenis = document.getElementById('jenisUcapan').value;
-            if (jenis === 'lahiran') {
-                document.getElementById('labelFoto').innerText = "Unggah Foto Bayi (Opsional)";
-                document.getElementById('labelNama').innerText = "Nama Bayi / Anak";
-                document.getElementById('namaMeninggal').value = "Muhammad Azka";
+            if (jenis === 'duka') {
+                document.getElementById('labelFoto').innerText = 'Unggah Foto Almarhum/ah (Opsional)';
+                document.getElementById('labelNama').innerText = 'Nama Almarhum / Almarhumah';
+                document.getElementById('labelBpk').innerText = 'Ayah / Orang Tua (Bpk)';
+                document.getElementById('labelIbu').innerText = 'Ibu';
             } else {
-                document.getElementById('labelFoto').innerText = "Unggah Foto Almarhum/ah (Opsional)";
-                document.getElementById('labelNama').innerText = "Nama Almarhum / Almarhumah";
-                document.getElementById('namaMeninggal').value = "Alm. Ibu Sutimi";
+                document.getElementById('labelFoto').innerText = 'Unggah Foto Bayi (Opsional)';
+                document.getElementById('labelNama').innerText = 'Nama Bayi';
+                document.getElementById('labelBpk').innerText = 'Nama Ayah';
+                document.getElementById('labelIbu').innerText = 'Nama Ibu';
             }
             generateCard();
-        };
+        }
 
-        window.handleImageUpload = function(e) {
-            let reader = new FileReader();
-            reader.onload = function(event) {
-                uploadedImage = new Image();
-                uploadedImage.onload = function() { generateCard(); };
-                uploadedImage.src = event.target.result;
+        function handleImageUpload(e) {
+            let file = e.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImage = new Image();
+                    uploadedImage.onload = function() { generateCard(); };
+                    uploadedImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-        };
+        }
 
-        // RENDER KARTU CANVAS PRESISI
-        window.generateCard = function() {
+        function generateCard() {
             let canvas = document.getElementById('cardCanvas');
-            if(!canvas) return;
             let ctx = canvas.getContext('2d');
             let jenis = document.getElementById('jenisUcapan').value;
-            
-            let activeBg = (jenis === 'lahiran') ? bgLahiranImg : bgDukaImg;
 
-            // 1. Render Background Canva
-            if (activeBg.complete && activeBg.naturalWidth !== 0) {
-                ctx.drawImage(activeBg, 0, 0, canvas.width, canvas.height);
+            let nama = document.getElementById('namaMeninggal').value;
+            let bpk = document.getElementById('namaBpk').value;
+            let ibu = document.getElementById('namaIbu').value;
+            let alamat = document.getElementById('alamatBlok').value;
+
+            let bg = (jenis === 'duka') ? bgDukaImg : bgLahiranImg;
+
+            if (bg.complete && bg.naturalWidth !== 0) {
+                ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
             } else {
-                ctx.fillStyle = "#ffffff";
+                ctx.fillStyle = (jenis === 'duka') ? '#222' : '#e3f2fd';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // 2. Render Foto Bingkai
+            // GAMBAR FOTO
             if (uploadedImage) {
                 ctx.save();
-                
-                let imgX, imgY, radius;
-
-                if (jenis === 'lahiran') {
-                    imgX = 245;
-                    imgY = 360;
-                    radius = 110;
-                } else {
-                    // Bingkai Lingkaran Emas Duka Cita (Tengah)
-                    imgX = canvas.width / 2;
-                    imgY = 310;              // Posisi foto di tengah bingkai emas
-                    radius = 90;
-                }
-
                 ctx.beginPath();
-                ctx.arc(imgX, imgY, radius, 0, Math.PI * 2);
+                ctx.arc(500, 220, 90, 0, Math.PI * 2, true);
                 ctx.closePath();
                 ctx.clip();
-
-                let imgWidth = uploadedImage.naturalWidth || uploadedImage.width;
-                let imgHeight = uploadedImage.naturalHeight || uploadedImage.height;
-                let diameter = radius * 2;
-                
-                let scale = Math.max(diameter / imgWidth, diameter / imgHeight);
-                let renderW = imgWidth * scale;
-                let renderH = imgHeight * scale;
-                
-                let drawX = imgX - (renderW / 2);
-                let drawY = imgY - (renderH / 2);
-
-                ctx.drawImage(uploadedImage, drawX, drawY, renderW, renderH);
+                ctx.drawImage(uploadedImage, 410, 130, 180, 180);
                 ctx.restore();
+
+                ctx.beginPath();
+                ctx.arc(500, 220, 90, 0, Math.PI * 2, true);
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = (jenis === 'duka') ? '#D4AF37' : '#0d6efd';
+                ctx.stroke();
             }
 
-            // 3. Render Teks Nama & Detail
-            ctx.textAlign = "center";
-            let bpk = document.getElementById('namaBpk').value;
-            let ibu = document.getElementById('namaIbu').value;
-            let alamat = document.getElementById('alamatBlok').value || "Blok A2 No. 15";
-            let nama = document.getElementById('namaMeninggal').value || "Nama";
+            // TEKS DESAIN
+            ctx.textAlign = 'center';
+            if (jenis === 'duka') {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 38px "Playfair Display", serif';
+                ctx.fillText(nama, 500, 430);
 
-            if (tema === 'kelahiran') {
-            // --- TEMA KELAHIRAN (NAMA 45PX & POSISI DINAIKKAN) ---
-            let startX = 660; // Titik tengah teks di area kanan
-
-            // 1. Nama Anak (Diperbesar ke 45px & Posisinya Dinaikkan ke 390)
-            let startY = 390; 
-            ctx.fillStyle = "#1d4ed8";
-            ctx.font = "bold 45px 'Playfair Display', serif";
-            ctx.fillText(nama, startX, startY);
-
-            // 2. Label "Putra/Putri dari:" (Baris Pertama)
-            startY = 450;
-            ctx.fillStyle = "#2b2b2b";
-            ctx.font = "500 18px 'Inter', sans-serif";
-            let labelOrtu = "";
-            if (bpk || ibu) labelOrtu = "Putra/Putri dari:";
-            if (labelOrtu) ctx.fillText(labelOrtu, startX, startY);
-
-            // 3. Nama Orang Tua "Bpk Sukardi & Ibu Aisyah" (Baris Kedua)
-            startY += 28;
-            ctx.font = "bold 20px 'Inter', sans-serif";
-            let namaOrtu = "";
-            if (bpk && ibu) namaOrtu = `Bpk ${bpk} & Ibu ${ibu}`;
-            else if (bpk) namaOrtu = `Bpk ${bpk}`;
-            else if (ibu) namaOrtu = `Ibu ${ibu}`;
-            if (namaOrtu) ctx.fillText(namaOrtu, startX, startY);
-
-            // 4. Alamat (Baris Ketiga)
-            startY += 30;
-            ctx.fillStyle = "#555555";
-            ctx.font = "500 16px 'Inter', sans-serif";
-            ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
-
-        } else {
-            // --- TEMA DUKA CITA (NAMA ALMARHUM/AH 30PX) ---
-            let startX = canvas.width / 2;
-
-            // A. Nama Almarhum/ah (Ukuran diperbesar ke 30px, posisi di 475)
-            let startY = 475;
-            ctx.fillStyle = "#1b4332";
-            ctx.font = "bold 30px 'Playfair Display', serif";
-            ctx.fillText(nama, startX, startY);
-
-            // B. Keterangan Keluarga (Jarak disesuaikan ke 525)
-            startY = 515;
-            ctx.fillStyle = "#2b2b2b";
-            ctx.font = "600 25px 'Inter', sans-serif";
-            let ortuText = "";
-            if (bpk && ibu) ortuText = `Orang Tua dari Bpk ${bpk} & Ibu ${ibu}`;
-            else if (bpk) ortuText = `Orang Tua dari Bpk ${bpk}`;
-            else if (ibu) ortuText = `Orang Tua dari Ibu ${ibu}`;
-            if (ortuText) ctx.fillText(ortuText, startX, startY);
-
-            // C. Alamat
-            startY += 30;
-            ctx.fillStyle = "#555555";
-            ctx.font = "500 20px 'Inter', sans-serif";
-            ctx.fillText(`(${alamat} - Oleana Park)`, startX, startY);
-        }
-    };
-
-        window.downloadImage = function() {
-            let canvas = document.getElementById('cardCanvas');
-            let jenis = document.getElementById('jenisUcapan').value;
-            let link = document.createElement('a');
-            link.download = (jenis === 'lahiran') ? 'Ucapan_Kelahiran_RT05.png' : 'Ucapan_Duka_Cita_RT05.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        };
-
-        window.shareWhatsApp = function() {
-            let jenis = document.getElementById('jenisUcapan').value;
-            let nama = document.getElementById('namaMeninggal').value;
-            let teks = "";
-
-            if (jenis === 'lahiran') {
-                teks = `Selamat atas kelahiran putra/putri dari keluarga *${nama}*! 👶\nSemoga menjadi anak yang soleh/solehah dan membawa keberkahan.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+                ctx.fillStyle = '#D4AF37';
+                ctx.font = '24px "Inter", sans-serif';
+                ctx.fillText(`Keluarga Bpk. ${bpk} / Ibu ${ibu}`, 500, 480);
+                ctx.fillText(`(${alamat})`, 500, 520);
             } else {
-                teks = `Innalillahi wa inna ilaihi raji'un.\n\nTelah berpulang ke Rahmatullah *${nama}*.\nSemoga Husnul Khotimah.\n\n- Pengurus & Warga RT 05 Oleana Park -`;
+                ctx.fillStyle = '#0d6efd';
+                ctx.font = 'bold 38px "Playfair Display", serif';
+                ctx.fillText(nama, 500, 430);
+
+                ctx.fillStyle = '#333333';
+                ctx.font = '24px "Inter", sans-serif';
+                ctx.fillText(`Putra/Putri dari Bpk. ${bpk} & Ibu ${ibu}`, 500, 480);
+                ctx.fillText(`Alamat: ${alamat}`, 500, 520);
             }
+        }
 
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
-        };
+        function downloadImage() {
+            let canvas = document.getElementById('cardCanvas');
+            let link = document.createElement('a');
+            link.download = 'ucapan-rt05.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
 
-        window.addEventListener('DOMContentLoaded', function() {
+        function shareWhatsApp() {
+            let nama = document.getElementById('namaMeninggal').value;
+            let jenis = document.getElementById('jenisUcapan').value;
+            let pesan = (jenis === 'duka') ? 
+                `*TURUT BERDUKA CITA - RT 05 OLEANA PARK*\nInnalillahi wa inna ilaihi raji'un. Telah berpulang ke rahmatullah: *${nama}*.\nSemoga almarhum/ah husnul khotimah.` :
+                `*UCAPAN SELAMAT KELAHIRAN - RT 05 OLEANA PARK*\nSelamat atas kelahiran putra/putri dari *${nama}*.\nSemoga menjadi anak yang soleh/solehah dan berbakti.`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // SIMPAN TRANSAKSI KAS VIA GOOGLE APPS SCRIPT
+        async function simpanKas(e) {
+            e.preventDefault();
+            let status = document.getElementById('statusInput');
+            status.className = 'text-center small mt-2 fw-bold text-warning';
+            status.innerText = 'Mengirim data...';
+
+            let payload = {
+                tanggal: document.getElementById('inputTanggal').value,
+                jenis: document.getElementById('inputJenis').value,
+                keterangan: document.getElementById('inputKeterangan').value,
+                nominal: document.getElementById('inputNominal').value
+            };
+
+            try {
+                await fetch(URL_APPS_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                status.className = 'text-center small mt-2 fw-bold text-success';
+                status.innerText = 'Berhasil disimpan! Silakan muat ulang halaman.';
+                document.getElementById('formKeuangan').reset();
+            } catch (err) {
+                status.className = 'text-center small mt-2 fw-bold text-danger';
+                status.innerText = 'Gagal menyimpan transaksi.';
+            }
+        }
+
+        // INIT SAAT HALAMAN DIBUKA
+        window.onload = function() {
             loadAgenda();
-            loadKasRT();
+            loadKas();
             loadKasDansos();
             loadSurat();
-
-            // Render Ulang Otomatis Saat Font Selesai Load
-            document.fonts.ready.then(function () {
-                generateCard();
-            });
-
-            const formKeuangan = document.getElementById('formKeuangan');
-            if (formKeuangan) {
-                formKeuangan.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    let status = document.getElementById('statusInput');
-                    
-                    if (URL_APPS_SCRIPT.includes("GANTI_DENGAN_ID_SCRIPT_ANDA")) {
-                        status.innerHTML = "<span class='text-danger'>URL Web App Google Script belum diatur!</span>";
-                        return;
-                    }
-
-                    status.innerHTML = "<span class='text-warning'>Mengirim data...</span>";
-
-                    let payload = {
-                        tanggal: document.getElementById('inputTanggal').value,
-                        jenis: document.getElementById('inputJenis').value,
-                        keterangan: document.getElementById('inputKeterangan').value,
-                        nominal: document.getElementById('inputNominal').value
-                    };
-
-                    fetch(URL_APPS_SCRIPT, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    })
-                    .then(res => res.text())
-                    .then(data => {
-                        status.innerHTML = "<span class='text-success'>Data berhasil disimpan!</span>";
-                        document.getElementById('formKeuangan').reset();
-                        loadKasRT();
-                        loadKasDansos();
-                    })
-                    .catch(err => {
-                        status.innerHTML = "<span class='text-danger'>Gagal menyimpan data.</span>";
-                    });
-                });
-            }
-        });
+        };
     </script>
 </body>
 </html>
